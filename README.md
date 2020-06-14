@@ -17,15 +17,11 @@ of the box.
 
 Simple scroll:
 
-![](../react-marquee-master/docs/images/sample.gif)
+![image](/docs/images/sample.gif)
 
 Reverse it, and speed it up!
 
-![](../react-marquee-master/docs/images/sample-2.gif)
-
-[![Edit Marquee](https://codesandbox.io/static/img/play-codesandbox.svg)](https://codesandbox.io/s/heuristic-curran-bddeu?fontsize=14&hidenavigation=1&theme=dark)
-
-Or see it on [Github Page](https://wwayne.github.io/react-marquee-master).
+![image](/docs/images/sample-2.gif)
 
 ## Maintainers
 
