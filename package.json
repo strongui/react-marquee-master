@@ -1,0 +1,36 @@
+{
+  "name": "react-marquee-master",
+  "version": "1.0.0",
+  "description": "React component to allow you to create a vertically scrolling marquee",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "engines": {
+    "node": ">=10.18",
+    "npm": ">=6.13"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/strongui/react-marquee-master.git"
+  },
+  "keywords": [
+    "react",
+    "react-component",
+    "marquee"
+  ],
+  "files": [
+    "dist"
+  ],
+  "peerDependencies": {
+    "react": ">=16.0.0",
+    "react-dom": ">=16.0.0"
+  },
+  "author": "Amir Karamuja",
+  "types": "dist/index.d.ts",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/strongui/react-marquee-master/issues"
+  },
+  "homepage": "https://github.com/strongui/react-marquee-master#readme"
+}
