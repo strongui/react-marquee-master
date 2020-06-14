@@ -20,4 +20,6 @@
 4. In Your Application
    1. Stop your dev-server and do `npm start` again.
 
-## To publish
+## To release
+
+np
