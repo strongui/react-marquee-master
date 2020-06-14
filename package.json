@@ -4,7 +4,7 @@
   "description": "React component to allow you to create a vertically scrolling marquee",
   "main": "dist/index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"No test specified\""
   },
   "engines": {
     "node": ">=10.18",
