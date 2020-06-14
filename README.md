@@ -21,7 +21,7 @@ Simple scroll:
 
 Reverse it, and speed it up!
 
-![image](/docs/images/sample-2.gif)
+![image](/docs/images/sample-2.gif?s=200)
 
 ## Maintainers
 
