@@ -3,14 +3,15 @@
   "version": "1.1.0",
   "description": "React component to allow you to create a vertically scrolling marquee",
   "scripts": {
-    "test": "echo \"No test specified\"",
-    "lint": "eslint ./src/**",
-    "lint:fix": "eslint --fix ./src/**",
-    "type-check": "tsc --noEmit",
-    "type-check:watch": "npm run type-check -- --watch",
-    "build:types": "tsc --emitDeclarationOnly",
     "build:js": "rollup -c",
-    "build": "npm run build:types && npm run build:js"
+    "build:types": "tsc --emitDeclarationOnly",
+    "build": "npm run build:types && npm run build:js",
+    "lint:fix": "eslint --fix ./src/**",
+    "lint": "eslint ./src/**",
+    "start": "rollup -c -w",
+    "test": "echo \"No test specified\"",
+    "type-check:watch": "npm run type-check -- --watch",
+    "type-check": "tsc --noEmit"
   },
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
