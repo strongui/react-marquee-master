@@ -17,13 +17,15 @@ of the box.
 
 Simple scroll:
 
-![image](/docs/images/sample.gif)
+<!-- markdownlint-disable MD033 -->
+<img src="/docs/images/sample.gif" width="300">
+<!-- markdownlint-enable MD033 -->
 
 Reverse it, and speed it up!
 
-![image](/docs/images/sample-2.gif?s=200)
-
-<img src="/docs/images/sample-2.gif" width="200">
+<!-- markdownlint-disable MD033 -->
+<img src="/docs/images/sample-2.gif" width="300">
+<!-- markdownlint-enable MD033 -->
 
 ## Maintainers
 
@@ -44,7 +46,7 @@ yarn add react-marquee-master
 
 ## Usage
 
-**Using NPM**
+### Using NPM
 
 1 . Require react-marquee-master after installation
 
@@ -58,7 +60,7 @@ import Marquee from 'react-marquee-master';
 <Marquee marqueeItems={marqueeItems} />
 ```
 
-**Standalone**
+### Standalone
 
 You can import `node_modules/react-marquee-master/dist/index.js` into your page. Please make sure
 that you have already imported `react` and `react-dom` into your page.
