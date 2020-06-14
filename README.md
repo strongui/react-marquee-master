@@ -23,6 +23,8 @@ Reverse it, and speed it up!
 
 ![image](/docs/images/sample-2.gif?s=200)
 
+<img src="/docs/images/sample-2.gif" width="200">
+
 ## Maintainers
 
 [strongui](https://github.com/strongui) Active maintainer - accepting PRs and doing minor testing,
