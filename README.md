@@ -94,9 +94,11 @@ Notes:
 
 1. Open console at root of react-marquee-master
 2. run `npm link ../YOUR_APP_NAME/node_modules/react`
-3. Now in YOUR_APP_NAME you can import this module
+3. run `npm link`
+4. In YOUR_APP_NAME run `npm link react-marquee-master`
+5. Now in YOUR_APP_NAME you can import this module
    (`import { Marquee } from 'react-marquee-master';`)
-4. `npm run watch` (rollup to update react-marquee-master)
+6. `npm start` (rollup to update react-marquee-master)
 
 ### To release
 
