@@ -24,6 +24,13 @@ Reverse it, and speed it up!
 
 <!-- markdownlint-disable MD033 -->
 <img src="/docs/images/sample-2.gif" width="300">
+
+<!-- markdownlint-enable MD033 -->
+
+Or horizontal!
+
+<!-- markdownlint-disable MD033 -->
+<img src="/docs/images/sample-3.gif" width="300">
 <!-- markdownlint-enable MD033 -->
 
 ## Maintainers
@@ -76,18 +83,18 @@ Notes:
   way you want. All this component will do is handle the animations for you. I did not want to force
   any arbitrary styles on you or grow the size of the package by importing additional libraries.
 
-| Prop                      | Type                       | Values   | Default | Description                                                    |
-| ------------------------- | -------------------------- | -------- | ------- | -------------------------------------------------------------- |
-| delay                     | number                     | 0-99999  | 40      | Delay of the animation. Lower number speeds up the scroll.     |
-| direction                 | string                     | up, down | up      | Direction of the scroll.                                       |
-| height                    | number                     | 0-99999  |         | The fixed height of the marquee                                |
-| inverseMarqueeItems       | boolean                    | true     | false   | Reverse the marquee array. Useful when scrolling down.         |
-| marqueeClassName          | string                     |          |         | Class to apply to marquee element.                             |
-| marqueeContainerClassName | string                     |          |         | Class to apply to marquee container element.                   |
-| marqueeItemClassName      | string                     |          |         | Class to apply to each marquee element.                        |
-| marqueeItemClassName      | string                     |          |         | Class to apply to each marquee element.                        |
-| marqueeItems              | Array<string\|JSX.Element> | []       | []      | The text / Components to display.                              |
-| minHeight                 | number                     | 0-99999  |         | More dynamic sizing option with a minimum size that will grow. |
+| Prop                      | Type                       | Values                | Default | Description                                                    |
+| ------------------------- | -------------------------- | --------------------- | ------- | -------------------------------------------------------------- |
+| delay                     | number                     | 0-99999               | 40      | Delay of the animation. Lower number speeds up the scroll.     |
+| direction                 | string                     | up, right, down, left | up      | Direction of the scroll.                                       |
+| height                    | number                     | 0-99999               |         | The fixed height of the marquee                                |
+| inverseMarqueeItems       | boolean                    | true                  | false   | Reverse the marquee array. Useful when scrolling down.         |
+| marqueeClassName          | string                     |                       |         | Class to apply to marquee element.                             |
+| marqueeContainerClassName | string                     |                       |         | Class to apply to marquee container element.                   |
+| marqueeItemClassName      | string                     |                       |         | Class to apply to each marquee element.                        |
+| marqueeItemClassName      | string                     |                       |         | Class to apply to each marquee element.                        |
+| marqueeItems              | Array<string\|JSX.Element> | []                    | []      | The text / Components to display.                              |
+| minHeight                 | number                     | 0-99999               |         | More dynamic sizing option with a minimum size that will grow. |
 
 ### To test locally in a separate app that imports this library
 

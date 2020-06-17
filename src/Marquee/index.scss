@@ -1,0 +1,83 @@
+.marquee-container {
+  overflow: hidden;
+  position: relative;
+
+  .marquee {
+    position: absolute;
+  }
+
+  &::before,
+  &::after {
+    content: ' ';
+    position: absolute;
+    z-index: 1;
+  }
+
+  &:not(.horizontal) {
+    &::before,
+    &::after {
+      height: 10%;
+      width: 100%;
+    }
+
+    &::before {
+      background: rgb(255, 255, 255);
+      background: linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(255, 255, 255, 0.6) 80%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      top: 0;
+    }
+
+    &::after {
+      background: rgb(255, 255, 255);
+      background: linear-gradient(
+        360deg,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(255, 255, 255, 0.6) 80%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      bottom: 0;
+    }
+  }
+
+  &.horizontal {
+    &::before,
+    &::after {
+      height: 100%;
+      width: 5%;
+    }
+
+    &::before {
+      background: rgb(255, 255, 255);
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(255, 255, 255, 0.6) 80%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      left: 0;
+    }
+
+    &::after {
+      background: rgb(255, 255, 255);
+      background: linear-gradient(
+        270deg,
+        rgba(255, 255, 255, 1) 0%,
+        rgba(255, 255, 255, 0.6) 80%,
+        rgba(255, 255, 255, 0) 100%
+      );
+      right: 0;
+    }
+
+    .marquee {
+      align-items: center;
+      display: flex;
+      height: 100%;
+      justify-content: center;
+      white-space: nowrap;
+    }
+  }
+}

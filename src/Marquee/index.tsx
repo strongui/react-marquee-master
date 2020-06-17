@@ -5,7 +5,7 @@ const { useRef, useState } = React;
 
 export interface IMarqueeProps {
   delay?: number;
-  direction?: 'up' | 'down';
+  direction?: 'up' | 'right' | 'down' | 'left';
   height?: number;
   inverseMarqueeItems?: boolean;
   marqueeClassName?: string;
@@ -25,8 +25,10 @@ const marqueeDefaults = {
 const initState = (props: IMarqueeProps) => {
   const marqueeItems = props.marqueeItems || marqueeDefaults.marqueeItems;
   return {
-    marqueeItems: props.inverseMarqueeItems ? marqueeItems.reverse() : marqueeItems,
     bottom: 0,
+    left: 0,
+    marqueeItems: props.inverseMarqueeItems ? marqueeItems.reverse() : marqueeItems,
+    right: 0,
     top: 0,
   };
 };
@@ -36,7 +38,7 @@ export default function Marquee(props: IMarqueeProps) {
   const marqueeRef = useRef<HTMLDivElement>(null);
 
   const [state, setState] = useState(initState(props));
-  const { bottom, marqueeItems, top } = state;
+  const { bottom, marqueeItems, top, left, right } = state;
 
   const {
     height,
@@ -48,12 +50,9 @@ export default function Marquee(props: IMarqueeProps) {
 
   const delay = props.delay || marqueeDefaults.delay;
   const direction = props.direction || marqueeDefaults.direction;
+  const isHorizontal = direction === 'left' || direction === 'right';
 
-  const marqueeContainerStyle: React.CSSProperties = {
-    overflow: 'hidden',
-    minHeight: '150px',
-    position: 'relative',
-  };
+  const marqueeContainerStyle: React.CSSProperties = {};
   if (height) {
     marqueeContainerStyle.height = `${height}px`;
   } else if (minHeight) {
@@ -62,26 +61,34 @@ export default function Marquee(props: IMarqueeProps) {
     marqueeContainerStyle.minHeight = `${marqueeDefaults.minHeight}px`;
   }
 
-  const marqueeStyle: React.CSSProperties = {
-    position: 'absolute',
-  };
-  if (direction === 'down') {
-    marqueeStyle.bottom = `${bottom}px`;
-  } else {
+  const marqueeStyle: React.CSSProperties = {};
+  if (direction === 'up') {
     marqueeStyle.top = `${top}px`;
+  } else if (direction === 'right') {
+    marqueeStyle.right = `${right}px`;
+  } else if (direction === 'down') {
+    marqueeStyle.bottom = `${bottom}px`;
+  } else if (direction === 'left') {
+    marqueeStyle.left = `${left}px`;
   }
 
-  const getFirstMarqueeItemHeight = () => {
+  const getFirstMarqueeItemSize = () => {
     const childNode = marqueeRef.current?.firstChild;
     if (childNode instanceof HTMLDivElement) {
+      if (isHorizontal) {
+        return childNode.offsetWidth;
+      }
       return childNode.offsetHeight;
     }
     return 0;
   };
 
-  const getLastMarqueeItemHeight = () => {
+  const getLastMarqueeItemSize = () => {
     const childNode = marqueeRef.current?.lastChild;
     if (childNode instanceof HTMLDivElement) {
+      if (isHorizontal) {
+        return childNode.offsetWidth;
+      }
       return childNode.offsetHeight;
     }
     return 0;
@@ -89,55 +96,68 @@ export default function Marquee(props: IMarqueeProps) {
 
   userInterval(() => {
     const nextMarqueeItems = [...marqueeItems];
-    let nextTop = top;
-    let nextBottom = bottom;
+    let nextProp: 'top' | 'right' | 'bottom' | 'left';
+    switch (direction) {
+      case 'up':
+        nextProp = 'top';
+        break;
+      case 'right':
+        nextProp = 'right';
+        break;
+      case 'down':
+        nextProp = 'bottom';
+        break;
+      case 'left':
+        nextProp = 'left';
+        break;
 
-    if (direction === 'up') {
-      nextTop = nextTop - 1;
-      const firstMarqueeItemHeight = getFirstMarqueeItemHeight();
-      const firstMarqueeItemPassed =
-        (firstMarqueeItemHeight ? Math.floor(Math.abs(nextTop) / firstMarqueeItemHeight) : 0) > 0;
-      if (firstMarqueeItemPassed) {
+      default:
+        nextProp = 'top';
+        break;
+    }
+
+    let nextPropValue = state[nextProp];
+
+    // Next tic value
+    nextPropValue -= 1;
+    const marqueeItemSize =
+      direction === 'up' || direction === 'left'
+        ? getFirstMarqueeItemSize()
+        : getLastMarqueeItemSize();
+
+    const marqueeItemPassed =
+      (marqueeItemSize ? Math.floor(Math.abs(nextPropValue) / marqueeItemSize) : 0) > 0;
+
+    if (marqueeItemPassed) {
+      if (direction === 'up' || direction === 'left') {
         nextMarqueeItems.push(nextMarqueeItems.shift() as string);
-        nextTop = nextTop + firstMarqueeItemHeight;
-      }
-    } else {
-      nextBottom = nextBottom - 1;
-      const lastMarqueeItemHeight = getLastMarqueeItemHeight();
-      const lastMarqueeItemPassed =
-        (lastMarqueeItemHeight ? Math.floor(Math.abs(nextBottom) / lastMarqueeItemHeight) : 0) > 0;
-
-      if (lastMarqueeItemPassed) {
+      } else {
         nextMarqueeItems.unshift(nextMarqueeItems.pop() as string);
-        nextBottom = nextBottom + lastMarqueeItemHeight;
       }
+      nextPropValue = nextPropValue + marqueeItemSize;
     }
 
     setState((s) => ({
       ...s,
+      [nextProp]: nextPropValue,
       marqueeItems: nextMarqueeItems,
-      top: nextTop,
-      bottom: nextBottom,
     }));
   }, delay);
 
   const marqueeItemElms = marqueeItems.map((marqueeItem, i) => {
-    if (typeof marqueeItem === 'string') {
-      return (
-        <div
-          className={`marquee-item${marqueeItemClassName ? ` ${marqueeItemClassName}` : ''}`}
-          key={i}
-        >
-          {marqueeItem}
-        </div>
-      );
-    }
-    return React.cloneElement(marqueeItem, { key: i });
+    return (
+      <div
+        className={`marquee-item${marqueeItemClassName ? ` ${marqueeItemClassName}` : ''}`}
+        key={i}
+      >
+        {marqueeItem}
+      </div>
+    );
   });
 
   return (
     <div
-      className={`marquee-container${
+      className={`marquee-container${isHorizontal ? ' horizontal' : ''}${
         marqueeContainerClassName ? ` ${marqueeContainerClassName}` : ''
       }`}
       ref={marqueeContainerRef}

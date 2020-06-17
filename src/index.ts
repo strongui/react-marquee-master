@@ -1,3 +1,5 @@
+import './Marquee/index.scss';
+
 import { IMarqueeProps as IMarqueePropsAlias } from './Marquee';
 import Marquee from './Marquee';
 

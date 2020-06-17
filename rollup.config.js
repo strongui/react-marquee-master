@@ -5,6 +5,16 @@ import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import pkg from './package.json';
 import resolve from '@rollup/plugin-node-resolve';
 
+import sass from 'rollup-plugin-sass';
+import postcss from 'rollup-plugin-postcss';
+import url from 'rollup-plugin-url';
+import stylelint from 'rollup-plugin-stylelint';
+import svgr from '@svgr/rollup';
+
+/* postCSS plugins */
+import simplevars from 'postcss-simple-vars';
+import nested from 'postcss-nested';
+
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
 export default {
@@ -20,6 +30,17 @@ export default {
       throwOnError: true,
       throwOnWarning: true,
     }),
+    stylelint({
+      throwOnError: true,
+      throwOnWarning: true,
+    }),
+    postcss({
+      plugins: [simplevars(), nested()],
+      modules: true,
+    }),
+    sass({ insert: true }),
+    url(),
+    svgr(),
     // Compile TypeScript/JavaScript files
     babel({
       extensions,

@@ -48,6 +48,7 @@
     "@rollup/plugin-babel": "5.0.3",
     "@rollup/plugin-commonjs": "13.0.0",
     "@rollup/plugin-node-resolve": "8.0.1",
+    "@svgr/rollup": "^5.4.0",
     "@types/react": "^16.9.37",
     "@types/react-dom": "^16.9.5",
     "@typescript-eslint/eslint-plugin": "^3.3.0",
@@ -61,12 +62,19 @@
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-react": "^7.20.0",
     "eslint-plugin-react-hooks": "^4.0.4",
+    "node-sass": "^4.14.1",
+    "postcss-nested": "^4.2.1",
+    "postcss-simple-vars": "^5.0.2",
     "prettier": "^2.0.5",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "rollup": "^2.16.1",
     "rollup-plugin-eslint": "^7.0.0",
     "rollup-plugin-peer-deps-external": "^2.2.2",
+    "rollup-plugin-postcss": "^3.1.2",
+    "rollup-plugin-sass": "^1.2.2",
+    "rollup-plugin-stylelint": "^1.0.0",
+    "rollup-plugin-url": "^3.0.1",
     "stylelint": "^13.6.1",
     "stylelint-config-prettier": "^8.0.1",
     "stylelint-config-standard": "^20.0.0",
@@ -76,7 +84,28 @@
   "eslintConfig": {
     "extends": [
       "react-app"
-    ]
+    ],
+    "ignorePatterns": [
+      "*.scss",
+      "build/",
+      "node_modules/"
+    ],
+    "rules": {
+      "no-console": [
+        "warn",
+        {
+          "allow": [
+            "dir",
+            "error",
+            "group",
+            "groupEnd",
+            "info",
+            "trace",
+            "warn"
+          ]
+        }
+      ]
+    }
   },
   "author": "Amir Karamuja",
   "license": "MIT",
