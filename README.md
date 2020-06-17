@@ -7,7 +7,6 @@ of the box.
 [![Version](http://img.shields.io/npm/v/react-marquee-master.svg)](https://www.npmjs.org/package/react-marquee-master)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
 [![npm download][download-image]][download-url]
-[![Build Status](https://travis-ci.org/wwayne/react-marquee-master.svg?branch=master)](https://travis-ci.org/wwayne/react-marquee-master)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 [download-image]: https://img.shields.io/npm/dm/react-marquee-master.svg?style=flat-square
@@ -97,7 +96,7 @@ Notes:
 3. run `npm link`
 4. In YOUR_APP_NAME run `npm link react-marquee-master`
 5. Now in YOUR_APP_NAME you can import this module
-   (`import { Marquee } from 'react-marquee-master';`)
+   (`import Marquee, { IMarqueeProps } from 'react-marquee-master';`)
 6. `npm start` (rollup to update react-marquee-master)
 
 ### To release
