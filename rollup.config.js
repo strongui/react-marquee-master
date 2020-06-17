@@ -3,13 +3,12 @@ import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
 import pkg from './package.json';
-import resolve from '@rollup/plugin-node-resolve';
-
-import sass from 'rollup-plugin-sass';
 import postcss from 'rollup-plugin-postcss';
-import url from 'rollup-plugin-url';
+import resolve from '@rollup/plugin-node-resolve';
+import sass from 'rollup-plugin-sass';
 import stylelint from 'rollup-plugin-stylelint';
 import svgr from '@svgr/rollup';
+import url from 'rollup-plugin-url';
 
 /* postCSS plugins */
 import simplevars from 'postcss-simple-vars';
