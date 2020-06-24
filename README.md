@@ -116,4 +116,4 @@ I welcome your contribution! Fork the repo, make some changes, submit a pull-req
 
 ## License
 
-MIT
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
