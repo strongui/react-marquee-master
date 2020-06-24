@@ -27,7 +27,8 @@
   "keywords": [
     "react",
     "react-component",
-    "marquee"
+    "marquee",
+    "scrolling"
   ],
   "files": [
     "dist"
