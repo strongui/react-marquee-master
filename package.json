@@ -113,5 +113,8 @@
   "bugs": {
     "url": "https://github.com/strongui/react-marquee-master/issues"
   },
-  "homepage": "https://github.com/strongui/react-marquee-master#readme"
+  "homepage": "https://github.com/strongui/react-marquee-master#readme",
+  "dependencies": {
+    "np": "^6.4.0"
+  }
 }
