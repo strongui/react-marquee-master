@@ -1,6 +1,6 @@
 {
   "name": "react-marquee-master",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "React component to allow you to create a vertically scrolling marquee",
   "scripts": {
     "build:js": "rollup -c",
