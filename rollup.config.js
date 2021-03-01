@@ -27,7 +27,7 @@ export default {
     peerDepsExternal(),
     eslint({
       throwOnError: true,
-      throwOnWarning: true,
+      throwOnWarning: false,
     }),
     stylelint({
       throwOnError: true,
