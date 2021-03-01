@@ -31,7 +31,7 @@ export default {
     }),
     stylelint({
       throwOnError: true,
-      throwOnWarning: true,
+      throwOnWarning: false,
     }),
     postcss({
       plugins: [simplevars(), nested()],
