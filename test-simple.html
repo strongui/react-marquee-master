@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Marquee Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .test-container {
+            width: 400px;
+            height: 200px;
+            border: 2px solid #ccc;
+            margin: 20px;
+            background: white;
+        }
+        .marquee-item {
+            padding: 10px;
+            background: #007bff;
+            color: white;
+            margin: 5px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Simple Marquee Test</h1>
+    <div class="test-container" id="marquee-container"></div>
+    
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script>
+        console.log('React loaded:', typeof React !== 'undefined');
+        console.log('ReactDOM loaded:', typeof ReactDOM !== 'undefined');
+        
+        // Simple test to verify the marquee is working
+        const { useState, useEffect } = React;
+        
+        function TestMarquee() {
+            const [position, setPosition] = useState(0);
+            
+            useEffect(() => {
+                const interval = setInterval(() => {
+                    setPosition(prev => prev - 1);
+                }, 50);
+                
+                return () => clearInterval(interval);
+            }, []);
+            
+            return React.createElement('div', {
+                style: {
+                    position: 'absolute',
+                    top: `${position}px`,
+                    width: '100%'
+                }
+            }, 
+                React.createElement('div', { className: 'marquee-item' }, 'Test Item 1'),
+                React.createElement('div', { className: 'marquee-item' }, 'Test Item 2'),
+                React.createElement('div', { className: 'marquee-item' }, 'Test Item 3')
+            );
+        }
+        
+        const container = document.getElementById('marquee-container');
+        const root = ReactDOM.createRoot(container);
+        root.render(React.createElement(TestMarquee));
+    </script>
+</body>
+</html>

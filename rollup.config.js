@@ -1,14 +1,10 @@
-import { eslint } from 'rollup-plugin-eslint';
 import babel from '@rollup/plugin-babel';
 import commonjs from '@rollup/plugin-commonjs';
 import peerDepsExternal from 'rollup-plugin-peer-deps-external';
-import pkg from './package.json';
+import pkg from './package.json' with { type: 'json' };
 import postcss from 'rollup-plugin-postcss';
 import resolve from '@rollup/plugin-node-resolve';
-import sass from 'rollup-plugin-sass';
-import stylelint from 'rollup-plugin-stylelint';
 import svgr from '@svgr/rollup';
-import url from 'rollup-plugin-url';
 
 /* postCSS plugins */
 import simplevars from 'postcss-simple-vars';
@@ -25,20 +21,10 @@ export default {
 
   plugins: [
     peerDepsExternal(),
-    eslint({
-      throwOnError: true,
-      throwOnWarning: false,
-    }),
-    stylelint({
-      throwOnError: true,
-      throwOnWarning: false,
-    }),
     postcss({
       plugins: [simplevars(), nested()],
       modules: true,
     }),
-    sass({ insert: true }),
-    url(),
     svgr(),
     // Compile TypeScript/JavaScript files
     babel({
@@ -48,7 +34,7 @@ export default {
       exclude: 'node_modules/**',
     }),
     // Allows node_modules resolution
-    resolve({ jsnext: true, extensions }),
+    resolve({ preferBuiltins: false, extensions }),
 
     // Allow bundling cjs modules. Rollup doesn't understand cjs
     commonjs(),

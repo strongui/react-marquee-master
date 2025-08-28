@@ -4,15 +4,17 @@
     "declaration": true,
     "declarationDir": "dist",
     "esModuleInterop": true,
-    "jsx": "react",
-    "lib": ["es2017", "es7", "es6", "dom"],
+    "jsx": "react-jsx",
+    "lib": ["es2020", "dom"],
     "module": "esnext",
     "moduleResolution": "node",
     "outDir": "dist",
     "rootDir": "src",
     "sourceMap": true,
     "strict": true,
-    "target": "es5"
+    "target": "es2018",
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true
   },
   "exclude": ["node_modules", "dist"],
   "include": ["src/**/*"]

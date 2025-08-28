@@ -1,0 +1,123 @@
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 20px;
+  background-color: #f5f5f5;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.demo-section {
+  margin-bottom: 40px;
+  padding: 24px;
+  border: 1px solid #f0f0f0;
+  border-radius: 12px;
+  background: white;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+}
+
+.demo-section h2 {
+  margin-top: 0;
+  color: #333;
+}
+
+.controls {
+  margin-bottom: 20px;
+}
+
+.controls button {
+  margin: 5px;
+  padding: 8px 16px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background: #f8f9fa;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.controls button:hover {
+  background: #e9ecef;
+}
+
+.controls button.active {
+  background: #007bff;
+  color: white;
+  border-color: #007bff;
+}
+
+.marquee-demo {
+  background: #ffffff;
+  border: 2px solid #dee2e6;
+  border-radius: 8px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.marquee-item {
+  padding: 15px 20px;
+  /* REMOVED: margin: 5px 0; - This was causing the jump! */
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border-radius: 4px;
+  font-weight: 500;
+  text-align: center;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.marquee-container.horizontal .marquee-item {
+  display: inline-block;
+  width: auto;
+  margin: 0;
+  padding: 15px 20px;
+}
+
+.marquee-item[data-color='1'] {
+  background: linear-gradient(45deg, #667eea 0%, #764ba2 100%);
+}
+
+.marquee-item[data-color='2'] {
+  background: linear-gradient(45deg, #f093fb 0%, #f5576c 100%);
+}
+
+.marquee-item[data-color='3'] {
+  background: linear-gradient(45deg, #4facfe 0%, #00f2fe 100%);
+}
+
+.marquee-item[data-color='4'] {
+  background: linear-gradient(45deg, #43e97b 0%, #38f9d7 100%);
+}
+
+input[type='range'] {
+  width: 200px;
+  margin: 0 10px;
+}
+
+.status {
+  margin-top: 10px;
+  padding: 10px;
+  background: #e7f3ff;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+/* Test marquee specific styling */
+.test-marquee-container {
+  border: 2px dashed #ff6b6b;
+  background-color: #fff5f5;
+}
+
+.test-marquee-container .marquee-item {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin: 2px;
+}
