@@ -129,4 +129,62 @@ describe('Marquee Component', () => {
     const container = screen.getByText('Item 1').closest('.marquee-container');
     expect(container).toHaveClass('fade-mask-black');
   });
+
+  it('renders dummy items for smooth scrolling', () => {
+    render(<Marquee {...defaultProps} />);
+    const dummyItems = document.querySelectorAll('.marquee-dummy-item');
+    expect(dummyItems.length).toBe(1);
+    expect(dummyItems[0]).toHaveStyle({ opacity: '0', pointerEvents: 'none' });
+  });
+
+  it('handles horizontal direction and applies horizontal class', () => {
+    render(<Marquee {...defaultProps} direction={MarqueeDirection.LEFT} />);
+    const container = screen.getByText('Item 1').closest('.marquee-container');
+    expect(container).toHaveClass('horizontal');
+  });
+
+  it('handles vertical direction and does not apply horizontal class', () => {
+    render(<Marquee {...defaultProps} direction={MarqueeDirection.UP} />);
+    const container = screen.getByText('Item 1').closest('.marquee-container');
+    expect(container).not.toHaveClass('horizontal');
+  });
+
+  it('handles mixed item types in the same marquee', () => {
+    const mixedItems = [
+      'String Item',
+      <span key="jsx">JSX Item</span>,
+      { text: 'Object Item', color: 5 },
+    ];
+    render(<Marquee {...defaultProps} marqueeItems={mixedItems} />);
+    
+    expect(screen.getByText('String Item')).toBeInTheDocument();
+    expect(screen.getByText('JSX Item')).toBeInTheDocument();
+    expect(screen.getByText('Object Item')).toBeInTheDocument();
+  });
+
+  it('applies data-color attribute to items with color property', () => {
+    const itemsWithColor = [
+      { text: 'Colored Item', color: 42 },
+      'Regular Item',
+    ];
+    render(<Marquee {...defaultProps} marqueeItems={itemsWithColor} />);
+    
+    const coloredItem = screen.getByText('Colored Item');
+    const regularItem = screen.getByText('Regular Item');
+    
+    expect(coloredItem).toHaveAttribute('data-color', '42');
+    expect(regularItem).not.toHaveAttribute('data-color');
+  });
+
+  it('handles empty marquee items array', () => {
+    render(<Marquee {...defaultProps} marqueeItems={[]} />);
+    const dummyItems = document.querySelectorAll('.marquee-dummy-item');
+    expect(dummyItems.length).toBe(1); // Should still have dummy item
+  });
+
+  it('handles fadeMaskColor.NONE', () => {
+    render(<Marquee {...defaultProps} applyFadeMask={true} fadeMaskColor={FadeMaskColor.NONE} />);
+    const container = screen.getByText('Item 1').closest('.marquee-container');
+    expect(container).toHaveClass('fade-mask-none');
+  });
 });
