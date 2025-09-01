@@ -4,9 +4,23 @@ import './index.scss';
 
 const { useRef, useState, useEffect } = React;
 
+// Enums for better type safety and developer experience
+export enum MarqueeDirection {
+  UP = 'up',
+  RIGHT = 'right',
+  DOWN = 'down',
+  LEFT = 'left',
+}
+
+export enum FadeMaskColor {
+  NONE = 'none',
+  WHITE = 'white',
+  BLACK = 'black',
+}
+
 export interface IMarqueeProps {
   delay?: number;
-  direction?: 'up' | 'right' | 'down' | 'left';
+  direction?: MarqueeDirection;
   height?: number;
   inverseMarqueeItems?: boolean;
   marqueeClassName?: string;
@@ -18,7 +32,7 @@ export interface IMarqueeProps {
   pauseOnHover?: boolean;
   pauseOnItemHover?: boolean;
   applyFadeMask?: boolean;
-  fadeMaskColor?: 'white' | 'black';
+  fadeMaskColor?: FadeMaskColor;
   onPause?: () => void;
   onResume?: () => void;
   onMarqueeHover?: () => void;
@@ -27,13 +41,13 @@ export interface IMarqueeProps {
 
 const marqueeDefaults = {
   delay: 40,
-  direction: 'up',
+  direction: MarqueeDirection.UP,
   marqueeItems: [],
   minHeight: 150,
   pauseOnHover: false,
   pauseOnItemHover: false,
   applyFadeMask: true,
-  fadeMaskColor: 'white',
+  fadeMaskColor: FadeMaskColor.WHITE,
 };
 
 const initState = (props: IMarqueeProps) => {
@@ -52,12 +66,12 @@ const initState = (props: IMarqueeProps) => {
   // For up scrolling, dummy goes at the end (after real items)
   // For down scrolling, dummy goes at the beginning (before real items)
   const direction = props.direction || marqueeDefaults.direction;
-  const isHorizontal = direction === 'left' || direction === 'right';
-  const isVertical = direction === 'up' || direction === 'down';
+  const isHorizontal = direction === MarqueeDirection.LEFT || direction === MarqueeDirection.RIGHT;
+  const isVertical = direction === MarqueeDirection.UP || direction === MarqueeDirection.DOWN;
 
   let itemsWithDummy = [...marqueeItems];
   if (isHorizontal || isVertical) {
-    if (direction === 'left' || direction === 'up') {
+    if (direction === MarqueeDirection.LEFT || direction === MarqueeDirection.UP) {
       itemsWithDummy.push(dummyItem as any);
     } else {
       itemsWithDummy.unshift(dummyItem as any);
@@ -93,8 +107,8 @@ export default function Marquee(props: IMarqueeProps) {
 
   const delay = props.delay || marqueeDefaults.delay;
   const direction = props.direction || marqueeDefaults.direction;
-  const isHorizontal = direction === 'left' || direction === 'right';
-  const isVertical = direction === 'up' || direction === 'down';
+  const isHorizontal = direction === MarqueeDirection.LEFT || direction === MarqueeDirection.RIGHT;
+  const isVertical = direction === MarqueeDirection.UP || direction === MarqueeDirection.DOWN;
   const paused = props.paused || false;
   const pauseOnHover = props.pauseOnHover || marqueeDefaults.pauseOnHover;
   const pauseOnItemHover = props.pauseOnItemHover || marqueeDefaults.pauseOnItemHover;
@@ -114,13 +128,13 @@ export default function Marquee(props: IMarqueeProps) {
   }
 
   const marqueeStyle: React.CSSProperties = {};
-  if (direction === 'up') {
+  if (direction === MarqueeDirection.UP) {
     marqueeStyle.top = `${top}px`;
-  } else if (direction === 'right') {
+  } else if (direction === MarqueeDirection.RIGHT) {
     marqueeStyle.right = `${right}px`;
-  } else if (direction === 'down') {
+  } else if (direction === MarqueeDirection.DOWN) {
     marqueeStyle.bottom = `${bottom}px`;
-  } else if (direction === 'left') {
+  } else if (direction === MarqueeDirection.LEFT) {
     marqueeStyle.left = `${left}px`;
   }
 
@@ -158,16 +172,16 @@ export default function Marquee(props: IMarqueeProps) {
       const nextMarqueeItems = [...marqueeItems];
       let nextProp: 'top' | 'right' | 'bottom' | 'left';
       switch (direction) {
-        case 'up':
+        case MarqueeDirection.UP:
           nextProp = 'top';
           break;
-        case 'right':
+        case MarqueeDirection.RIGHT:
           nextProp = 'right';
           break;
-        case 'down':
+        case MarqueeDirection.DOWN:
           nextProp = 'bottom';
           break;
-        case 'left':
+        case MarqueeDirection.LEFT:
           nextProp = 'left';
           break;
 
@@ -181,7 +195,7 @@ export default function Marquee(props: IMarqueeProps) {
       // Next tick value - smaller steps for smooth scrolling
       nextPropValue -= 0.5;
       const marqueeItemSize =
-        direction === 'up' || direction === 'left'
+        direction === MarqueeDirection.UP || direction === MarqueeDirection.LEFT
           ? getFirstMarqueeItemSize()
           : getLastMarqueeItemSize();
 
@@ -189,7 +203,7 @@ export default function Marquee(props: IMarqueeProps) {
         (marqueeItemSize ? Math.floor(Math.abs(nextPropValue) / marqueeItemSize) : 0) > 0;
 
       if (marqueeItemPassed) {
-        if (direction === 'up' || direction === 'left') {
+        if (direction === MarqueeDirection.UP || direction === MarqueeDirection.LEFT) {
           nextMarqueeItems.push(nextMarqueeItems.shift() as any);
         } else {
           nextMarqueeItems.unshift(nextMarqueeItems.pop() as any);

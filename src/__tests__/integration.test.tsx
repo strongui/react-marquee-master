@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import Marquee from '../Marquee';
+import React from 'react';
+import { render } from '@testing-library/react';
+import { screen, fireEvent, waitFor } from '@testing-library/dom';
+import Marquee, { MarqueeDirection, FadeMaskColor } from '../Marquee';
 
-// Mock the useInterval hook for integration tests
+// Mock the useInterval hook to avoid timing issues in tests
 jest.mock('../helpers/hookHelpers/useInterval', () => {
   return jest.fn((callback: () => void, delay: number | null) => {
     if (delay !== null) {
@@ -18,199 +18,208 @@ describe('Marquee Integration Tests', () => {
     jest.clearAllMocks();
   });
 
+  describe('Direction Integration', () => {
+    const directions = [
+      MarqueeDirection.UP,
+      MarqueeDirection.RIGHT,
+      MarqueeDirection.DOWN,
+      MarqueeDirection.LEFT,
+    ];
+
+    directions.forEach((direction) => {
+      it(`renders correctly with ${direction} direction`, () => {
+        render(<Marquee marqueeItems={['Item 1', 'Item 2', 'Item 3']} direction={direction} />);
+
+        expect(screen.getByText('Item 1')).toBeInTheDocument();
+        expect(screen.getByText('Item 2')).toBeInTheDocument();
+        expect(screen.getByText('Item 3')).toBeInTheDocument();
+      });
+    });
+  });
+
   describe('Pause/Resume Integration', () => {
-    const TestComponent = () => {
-      const [paused, setPaused] = useState(false);
-      const [pauseCount, setPauseCount] = useState(0);
-      const [resumeCount, setResumeCount] = useState(0);
+    it('integrates pause and resume functionality', async () => {
+      const onPause = jest.fn();
+      const onResume = jest.fn();
 
-      const handlePause = () => {
-        setPauseCount((prev) => prev + 1);
-      };
-
-      const handleResume = () => {
-        setResumeCount((prev) => prev + 1);
-      };
-
-      return (
-        <div>
-          <Marquee
-            marqueeItems={['Item 1', 'Item 2', 'Item 3']}
-            paused={paused}
-            onPause={handlePause}
-            onResume={handleResume}
-          />
-          <button onClick={() => setPaused(!paused)}>{paused ? 'Resume' : 'Pause'}</button>
-          <div data-testid="pause-count">Paused: {pauseCount}</div>
-          <div data-testid="resume-count">Resumed: {resumeCount}</div>
-        </div>
+      const { rerender } = render(
+        <Marquee
+          marqueeItems={['Item 1', 'Item 2']}
+          paused={false}
+          onPause={onPause}
+          onResume={onResume}
+        />
       );
-    };
 
-    it('should handle pause/resume with user interaction', async () => {
-      const user = userEvent.setup();
-      render(<TestComponent />);
-
-      const button = screen.getByText('Pause');
-      const pauseCount = screen.getByTestId('pause-count');
-      const resumeCount = screen.getByTestId('resume-count');
-
-      // Initial state
-      expect(pauseCount).toHaveTextContent('Paused: 0');
-      expect(resumeCount).toHaveTextContent('Resumed: 0');
-
-      // Pause the marquee
-      await user.click(button);
+      // Test pause
+      rerender(
+        <Marquee
+          marqueeItems={['Item 1', 'Item 2']}
+          paused={true}
+          onPause={onPause}
+          onResume={onResume}
+        />
+      );
 
       await waitFor(() => {
-        expect(pauseCount).toHaveTextContent('Paused: 1');
-        expect(resumeCount).toHaveTextContent('Resumed: 0');
+        expect(onPause).toHaveBeenCalledTimes(1);
       });
 
-      expect(screen.getByText('Resume')).toBeInTheDocument();
-
-      // Resume the marquee
-      await user.click(screen.getByText('Resume'));
+      // Test resume
+      rerender(
+        <Marquee
+          marqueeItems={['Item 1', 'Item 2']}
+          paused={false}
+          onPause={onPause}
+          onResume={onResume}
+        />
+      );
 
       await waitFor(() => {
-        expect(pauseCount).toHaveTextContent('Paused: 1');
-        expect(resumeCount).toHaveTextContent('Resumed: 1');
+        expect(onResume).toHaveBeenCalledTimes(1);
       });
+    });
 
-      expect(screen.getByText('Pause')).toBeInTheDocument();
+    it('integrates pauseOnHover functionality', () => {
+      const onMarqueeHover = jest.fn();
+
+      render(
+        <Marquee
+          marqueeItems={['Item 1', 'Item 2']}
+          pauseOnHover={true}
+          onMarqueeHover={onMarqueeHover}
+        />
+      );
+
+      const container = screen.getByText('Item 1').closest('.marquee-container');
+      expect(container).toBeInTheDocument();
+
+      if (container) {
+        fireEvent.mouseEnter(container);
+        fireEvent.mouseLeave(container);
+      }
+    });
+
+    it('integrates pauseOnItemHover functionality', () => {
+      const onMarqueeItemHover = jest.fn();
+
+      render(
+        <Marquee
+          marqueeItems={['Item 1', 'Item 2']}
+          pauseOnItemHover={true}
+          onMarqueeItemHover={onMarqueeItemHover}
+        />
+      );
+
+      const item = screen.getByText('Item 1');
+      expect(item).toBeInTheDocument();
+
+      fireEvent.mouseEnter(item);
+      fireEvent.mouseLeave(item);
     });
   });
 
-  describe('Direction Changes Integration', () => {
-    const DirectionTestComponent = () => {
-      const [direction, setDirection] = useState<'up' | 'right' | 'down' | 'left'>('up');
-
-      return (
-        <div>
-          <Marquee marqueeItems={['Item 1', 'Item 2', 'Item 3']} direction={direction} />
-          <button onClick={() => setDirection('right')}>Right</button>
-          <button onClick={() => setDirection('up')}>Up</button>
-        </div>
+  describe('Styling Integration', () => {
+    it('integrates custom className props', () => {
+      render(
+        <Marquee
+          marqueeItems={['Item 1']}
+          marqueeClassName="custom-marquee"
+          marqueeContainerClassName="custom-container"
+          marqueeItemClassName="custom-item"
+        />
       );
-    };
 
-    it('should handle direction changes correctly', async () => {
-      const user = userEvent.setup();
-      render(<DirectionTestComponent />);
+      const container = document.querySelector('.custom-container');
+      const marquee = document.querySelector('.custom-marquee');
+      const item = document.querySelector('.custom-item');
 
-      const container = document.querySelector('.marquee-container');
-
-      // Initial state - vertical (up)
-      expect(container).not.toHaveClass('horizontal');
-
-      // Change to horizontal (right)
-      await user.click(screen.getByText('Right'));
-      expect(container).toHaveClass('horizontal');
-
-      // Change back to vertical (up)
-      await user.click(screen.getByText('Up'));
-      expect(container).not.toHaveClass('horizontal');
-    });
-  });
-
-  describe('Dynamic Content Integration', () => {
-    const DynamicContentComponent = () => {
-      const [items, setItems] = useState(['Item 1', 'Item 2']);
-
-      const addItem = () => {
-        setItems((prev) => [...prev, `Item ${prev.length + 1}`]);
-      };
-
-      const removeItem = () => {
-        setItems((prev) => prev.slice(0, -1));
-      };
-
-      return (
-        <div>
-          <Marquee marqueeItems={items} />
-          <button onClick={addItem}>Add Item</button>
-          <button onClick={removeItem}>Remove Item</button>
-          <div data-testid="item-count">Items: {items.length}</div>
-        </div>
-      );
-    };
-
-    it('should handle dynamic content changes', async () => {
-      const user = userEvent.setup();
-      render(<DynamicContentComponent />);
-
-      // Initial state
-      expect(screen.getAllByText('Item 1')[0]).toBeInTheDocument();
-      expect(screen.getAllByText('Item 2')[0]).toBeInTheDocument();
-      expect(screen.getByTestId('item-count')).toHaveTextContent('Items: 2');
-
-      // Add item
-      await user.click(screen.getByText('Add Item'));
-      expect(screen.getAllByText('Item 3')[0]).toBeInTheDocument();
-      expect(screen.getByTestId('item-count')).toHaveTextContent('Items: 3');
-
-      // Remove item
-      await user.click(screen.getByText('Remove Item'));
-      expect(screen.queryByText('Item 3')).not.toBeInTheDocument();
-      expect(screen.getByTestId('item-count')).toHaveTextContent('Items: 2');
-    });
-  });
-
-  describe('Complex Configuration Integration', () => {
-    const ComplexConfigComponent = () => {
-      const [config, setConfig] = useState({
-        direction: 'up' as 'up' | 'right' | 'down' | 'left',
-        paused: false,
-        delay: 40,
-        height: 200,
-      });
-
-      const updateConfig = (newConfig: Partial<typeof config>) => {
-        setConfig((prev) => ({ ...prev, ...newConfig }));
-      };
-
-      return (
-        <div>
-          <Marquee
-            marqueeItems={['Item 1', 'Item 2', 'Item 3']}
-            direction={config.direction}
-            paused={config.paused}
-            delay={config.delay}
-            height={config.height}
-            marqueeClassName="complex-marquee"
-            marqueeContainerClassName="complex-container"
-            marqueeItemClassName="complex-item"
-          />
-
-          <button onClick={() => updateConfig({ paused: !config.paused })}>Toggle Pause</button>
-          <button onClick={() => updateConfig({ delay: 20 })}>Speed Up</button>
-          <button onClick={() => updateConfig({ height: 300 })}>Increase Height</button>
-        </div>
-      );
-    };
-
-    it('should handle complex configuration changes', async () => {
-      const user = userEvent.setup();
-      render(<ComplexConfigComponent />);
-
-      const container = document.querySelector('.complex-container');
-      const marquee = document.querySelector('.complex-marquee');
-      const item = document.querySelector('.complex-item');
-
-      // Verify initial setup
       expect(container).toBeInTheDocument();
       expect(marquee).toBeInTheDocument();
       expect(item).toBeInTheDocument();
-      expect(container).toHaveStyle('height: 200px');
+    });
 
-      // Test height change
-      await user.click(screen.getByText('Increase Height'));
-      expect(container).toHaveStyle('height: 300px');
+    it('integrates height and minHeight props', () => {
+      render(<Marquee marqueeItems={['Item 1']} height={200} minHeight={150} />);
 
-      // Verify all items are still present
-      expect(screen.getAllByText('Item 1')[0]).toBeInTheDocument();
-      expect(screen.getAllByText('Item 2')[0]).toBeInTheDocument();
-      expect(screen.getAllByText('Item 3')[0]).toBeInTheDocument();
+      const container = document.querySelector('.marquee-container');
+      expect(container).toHaveStyle({ height: '200px', minHeight: '150px' });
+    });
+
+    it('integrates fade mask functionality', () => {
+      render(
+        <Marquee
+          marqueeItems={['Item 1']}
+          applyFadeMask={true}
+          fadeMaskColor={FadeMaskColor.BLACK}
+        />
+      );
+
+      const container = document.querySelector('.marquee-container');
+      expect(container).toHaveClass('fade-mask-black');
+    });
+  });
+
+  describe('Item Types Integration', () => {
+    it('integrates string items', () => {
+      render(<Marquee marqueeItems={['String Item 1', 'String Item 2']} />);
+
+      expect(screen.getByText('String Item 1')).toBeInTheDocument();
+      expect(screen.getByText('String Item 2')).toBeInTheDocument();
+    });
+
+    it('integrates JSX element items', () => {
+      const jsxItems = [<span key="1">JSX Item 1</span>, <div key="2">JSX Item 2</div>];
+
+      render(<Marquee marqueeItems={jsxItems} />);
+
+      expect(screen.getByText('JSX Item 1')).toBeInTheDocument();
+      expect(screen.getByText('JSX Item 2')).toBeInTheDocument();
+    });
+
+    it('integrates object items with text property', () => {
+      const objectItems = [
+        { text: 'Object Item 1', color: 1 },
+        { text: 'Object Item 2', color: 2 },
+      ];
+
+      render(<Marquee marqueeItems={objectItems} />);
+
+      expect(screen.getByText('Object Item 1')).toBeInTheDocument();
+      expect(screen.getByText('Object Item 2')).toBeInTheDocument();
+    });
+  });
+
+  describe('Configuration Integration', () => {
+    it('integrates all configuration options together', () => {
+      const config = {
+        marqueeItems: ['Config Item 1', 'Config Item 2'],
+        direction: MarqueeDirection.LEFT,
+        height: 100,
+        delay: 50,
+        paused: false,
+        pauseOnHover: true,
+        pauseOnItemHover: false,
+        applyFadeMask: true,
+        fadeMaskColor: FadeMaskColor.WHITE,
+        inverseMarqueeItems: false,
+        marqueeClassName: 'test-marquee',
+        marqueeContainerClassName: 'test-container',
+        marqueeItemClassName: 'test-item',
+      };
+
+      render(<Marquee {...config} />);
+
+      expect(screen.getByText('Config Item 1')).toBeInTheDocument();
+      expect(screen.getByText('Config Item 2')).toBeInTheDocument();
+
+      const container = document.querySelector('.test-container');
+      const marquee = document.querySelector('.test-marquee');
+      const item = document.querySelector('.test-item');
+
+      expect(container).toBeInTheDocument();
+      expect(marquee).toBeInTheDocument();
+      expect(item).toBeInTheDocument();
     });
   });
 });

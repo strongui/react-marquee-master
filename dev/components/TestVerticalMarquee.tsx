@@ -1,5 +1,5 @@
 import React from 'react';
-import Marquee from '../../src/Marquee';
+import Marquee, { MarqueeDirection } from '../../src/Marquee';
 
 interface TestVerticalMarqueeProps {
   items: Array<{ id: number; text: string; color: number }>;
@@ -30,7 +30,7 @@ export function TestVerticalMarquee({ items }: TestVerticalMarqueeProps) {
         }}
       >
         <Marquee
-          direction="down"
+          direction={MarqueeDirection.DOWN}
           height={200}
           delay={5}
           marqueeItems={['adfasfadfasdasdf', 'asfa faf asdf as']}

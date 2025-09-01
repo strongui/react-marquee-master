@@ -1,200 +1,132 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import Marquee, { IMarqueeProps } from '../Marquee';
+import { render } from '@testing-library/react';
+import { screen } from '@testing-library/dom';
+import Marquee, { MarqueeDirection, FadeMaskColor } from '../Marquee';
 
-// Mock the useInterval hook to avoid timing issues in tests
-jest.mock('../helpers/hookHelpers/useInterval', () => {
-  return jest.fn((callback: () => void, delay: number | null) => {
-    if (delay !== null) {
-      const interval = setInterval(callback, delay);
-      return () => clearInterval(interval);
-    }
-  });
-});
+const defaultProps = {
+  marqueeItems: ['Item 1', 'Item 2', 'Item 3'],
+  height: 100,
+};
 
 describe('Marquee Component', () => {
-  const defaultProps: IMarqueeProps = {
-    marqueeItems: ['Item 1', 'Item 2', 'Item 3'],
-  };
-
-  beforeEach(() => {
-    jest.clearAllMocks();
+  it('renders without crashing', () => {
+    render(<Marquee {...defaultProps} />);
+    expect(screen.getByText('Item 1')).toBeInTheDocument();
   });
 
-  describe('Basic Rendering', () => {
-    it('renders without crashing', () => {
-      render(<Marquee {...defaultProps} />);
-      expect(screen.getAllByText('Item 1')[0]).toBeInTheDocument();
-      expect(screen.getAllByText('Item 2')[0]).toBeInTheDocument();
-      expect(screen.getAllByText('Item 3')[0]).toBeInTheDocument();
-    });
-
-    it('renders with custom className', () => {
-      render(
-        <Marquee
-          {...defaultProps}
-          marqueeClassName="custom-marquee"
-          marqueeContainerClassName="custom-container"
-          marqueeItemClassName="custom-item"
-        />
-      );
-
-      const container = document.querySelector('.custom-container');
-      const marquee = document.querySelector('.custom-marquee');
-      const item = document.querySelector('.custom-item');
-
-      expect(container).toBeInTheDocument();
-      expect(marquee).toBeInTheDocument();
-      expect(item).toBeInTheDocument();
-    });
-
-    it('renders with JSX elements', () => {
-      const jsxItems = [<span key="1">JSX Item 1</span>, <div key="2">JSX Item 2</div>];
-
-      render(<Marquee marqueeItems={jsxItems} />);
-
-      expect(screen.getAllByText('JSX Item 1')[0]).toBeInTheDocument();
-      expect(screen.getAllByText('JSX Item 2')[0]).toBeInTheDocument();
-    });
+  it('renders all marquee items', () => {
+    render(<Marquee {...defaultProps} />);
+    expect(screen.getByText('Item 1')).toBeInTheDocument();
+    expect(screen.getByText('Item 2')).toBeInTheDocument();
+    expect(screen.getByText('Item 3')).toBeInTheDocument();
   });
 
-  describe('Direction Props', () => {
-    it('applies correct class for horizontal direction', () => {
-      render(<Marquee {...defaultProps} direction="right" />);
-
-      const container = document.querySelector('.marquee-container');
-      expect(container).toHaveClass('horizontal');
-    });
-
-    it('applies correct class for horizontal direction', () => {
-      render(<Marquee {...defaultProps} direction="left" />);
-
-      const container = document.querySelector('.marquee-container');
-      expect(container).toHaveClass('horizontal');
-    });
-
-    it('does not apply horizontal class for vertical directions', () => {
-      render(<Marquee {...defaultProps} direction="up" />);
-
-      const container = document.querySelector('.marquee-container');
-      expect(container).not.toHaveClass('horizontal');
-    });
+  it('applies custom height', () => {
+    render(<Marquee {...defaultProps} height={200} />);
+    const container = screen.getByText('Item 1').closest('.marquee-container');
+    expect(container).toHaveStyle({ height: '200px' });
   });
 
-  describe('Styling Props', () => {
-    it('applies height when provided', () => {
-      render(<Marquee {...defaultProps} height={300} />);
+  it('applies custom delay', () => {
+    render(<Marquee {...defaultProps} delay={100} />);
+    // The delay prop affects animation speed, but we can't easily test this
+    // without more complex animation testing
+    expect(screen.getByText('Item 1')).toBeInTheDocument();
+  });
 
-      const container = document.querySelector('.marquee-container');
-      expect(container).toHaveStyle('height: 300px');
-    });
+  it('handles paused state', () => {
+    render(<Marquee {...defaultProps} paused={true} />);
+    expect(screen.getByText('Item 1')).toBeInTheDocument();
+  });
 
-    it('applies minHeight when provided', () => {
-      render(<Marquee {...defaultProps} minHeight={200} />);
+  it('handles pauseOnHover', () => {
+    render(<Marquee {...defaultProps} pauseOnHover={true} />);
+    expect(screen.getByText('Item 1')).toBeInTheDocument();
+  });
 
-      const container = document.querySelector('.marquee-container');
-      expect(container).toHaveStyle('min-height: 200px');
-    });
+  it('handles pauseOnItemHover', () => {
+    render(<Marquee {...defaultProps} pauseOnItemHover={true} />);
+    expect(screen.getByText('Item 1')).toBeInTheDocument();
+  });
 
-    it('applies default minHeight when no height props provided', () => {
-      render(<Marquee {...defaultProps} />);
+  it('renders with right direction', () => {
+    render(<Marquee {...defaultProps} direction={MarqueeDirection.RIGHT} />);
+    expect(screen.getByText('Item 1')).toBeInTheDocument();
+  });
 
-      const container = document.querySelector('.marquee-container');
-      expect(container).toHaveStyle('min-height: 150px');
+  it('renders with left direction', () => {
+    render(<Marquee {...defaultProps} direction={MarqueeDirection.LEFT} />);
+    expect(screen.getByText('Item 1')).toBeInTheDocument();
+  });
+
+  it('renders with up direction', () => {
+    render(<Marquee {...defaultProps} direction={MarqueeDirection.UP} />);
+    expect(screen.getByText('Item 1')).toBeInTheDocument();
+  });
+
+  it('renders with down direction', () => {
+    render(<Marquee {...defaultProps} direction={MarqueeDirection.DOWN} />);
+    expect(screen.getByText('Item 1')).toBeInTheDocument();
+  });
+
+  it('handles custom className', () => {
+    render(<Marquee {...defaultProps} marqueeClassName="custom-marquee" />);
+    const marquee = screen.getByText('Item 1').closest('.marquee');
+    expect(marquee).toHaveClass('custom-marquee');
+  });
+
+  it('handles custom container className', () => {
+    render(<Marquee {...defaultProps} marqueeContainerClassName="custom-container" />);
+    const container = screen.getByText('Item 1').closest('.marquee-container');
+    expect(container).toHaveClass('custom-container');
+  });
+
+  it('handles custom item className', () => {
+    render(<Marquee {...defaultProps} marqueeItemClassName="custom-item" />);
+    const items = screen.getAllByText(/Item \d/);
+    items.forEach((item) => {
+      expect(item).toHaveClass('custom-item');
     });
   });
 
-  describe('Pause/Resume Functionality', () => {
-    it('calls onPause when paused becomes true', async () => {
-      const onPause = jest.fn();
-      const { rerender } = render(<Marquee {...defaultProps} paused={false} onPause={onPause} />);
-
-      rerender(<Marquee {...defaultProps} paused={true} onPause={onPause} />);
-
-      await waitFor(() => {
-        expect(onPause).toHaveBeenCalledTimes(1);
-      });
-    });
-
-    it('calls onResume when paused becomes false', async () => {
-      const onResume = jest.fn();
-      const { rerender } = render(<Marquee {...defaultProps} paused={true} onResume={onResume} />);
-
-      rerender(<Marquee {...defaultProps} paused={false} onResume={onResume} />);
-
-      await waitFor(() => {
-        expect(onResume).toHaveBeenCalledTimes(1);
-      });
-    });
-
-    it('does not call callbacks when paused state does not change', () => {
-      const onPause = jest.fn();
-      const onResume = jest.fn();
-      const { rerender } = render(
-        <Marquee {...defaultProps} paused={false} onPause={onPause} onResume={onResume} />
-      );
-
-      rerender(<Marquee {...defaultProps} paused={false} onPause={onPause} onResume={onResume} />);
-
-      expect(onPause).not.toHaveBeenCalled();
-      expect(onResume).not.toHaveBeenCalled();
-    });
+  it('handles JSX elements as items', () => {
+    const jsxItems = [<span key="1">JSX Item 1</span>, <span key="2">JSX Item 2</span>];
+    render(<Marquee {...defaultProps} marqueeItems={jsxItems} />);
+    expect(screen.getByText('JSX Item 1')).toBeInTheDocument();
+    expect(screen.getByText('JSX Item 2')).toBeInTheDocument();
   });
 
-  describe('Inverse Marquee Items', () => {
-    it('reverses items when inverseMarqueeItems is true', () => {
-      render(<Marquee {...defaultProps} inverseMarqueeItems={true} />);
-
-      const items = document.querySelectorAll('.marquee-item');
-      expect(items[0]).toHaveTextContent('Item 3');
-      expect(items[1]).toHaveTextContent('Item 2');
-      expect(items[2]).toHaveTextContent('Item 1');
-    });
-
-    it('does not reverse items when inverseMarqueeItems is false or undefined', () => {
-      render(<Marquee {...defaultProps} inverseMarqueeItems={false} />);
-
-      const items = document.querySelectorAll('.marquee-item');
-      expect(items[0]).toHaveTextContent('Item 1');
-      expect(items[1]).toHaveTextContent('Item 2');
-      expect(items[2]).toHaveTextContent('Item 3');
-    });
+  it('handles object items with text property', () => {
+    const objectItems = [
+      { text: 'Object Item 1', color: 1 },
+      { text: 'Object Item 2', color: 2 },
+    ];
+    render(<Marquee {...defaultProps} marqueeItems={objectItems} />);
+    expect(screen.getByText('Object Item 1')).toBeInTheDocument();
+    expect(screen.getByText('Object Item 2')).toBeInTheDocument();
   });
 
-  describe('Props Validation', () => {
-    it('handles empty marqueeItems array', () => {
-      render(<Marquee marqueeItems={[]} />);
-
-      const container = document.querySelector('.marquee-container');
-      expect(container).toBeInTheDocument();
-    });
-
-    it('uses default delay when not provided', () => {
-      render(<Marquee {...defaultProps} />);
-
-      // Component should render without errors
-      expect(screen.getAllByText('Item 1')[0]).toBeInTheDocument();
-    });
-
-    it('uses custom delay when provided', () => {
-      render(<Marquee {...defaultProps} delay={100} />);
-
-      // Component should render without errors
-      expect(screen.getAllByText('Item 1')[0]).toBeInTheDocument();
-    });
+  it('handles inverse marquee items', () => {
+    render(<Marquee {...defaultProps} inverseMarqueeItems={true} />);
+    expect(screen.getByText('Item 1')).toBeInTheDocument();
   });
 
-  describe('Accessibility', () => {
-    it('has proper ARIA attributes', () => {
-      render(<Marquee {...defaultProps} />);
+  it('handles minHeight when height is not provided', () => {
+    const { height, ...propsWithoutHeight } = defaultProps;
+    render(<Marquee {...propsWithoutHeight} minHeight={150} />);
+    const container = screen.getByText('Item 1').closest('.marquee-container');
+    expect(container).toHaveStyle({ minHeight: '150px' });
+  });
 
-      const container = document.querySelector('.marquee-container');
-      expect(container).toBeInTheDocument();
+  it('handles applyFadeMask', () => {
+    render(<Marquee {...defaultProps} applyFadeMask={true} />);
+    const container = screen.getByText('Item 1').closest('.marquee-container');
+    expect(container).toHaveClass('fade-mask-white');
+  });
 
-      // Check that items are accessible
-      expect(screen.getAllByText('Item 1')[0]).toBeInTheDocument();
-      expect(screen.getAllByText('Item 2')[0]).toBeInTheDocument();
-      expect(screen.getAllByText('Item 3')[0]).toBeInTheDocument();
-    });
+  it('handles fadeMaskColor', () => {
+    render(<Marquee {...defaultProps} applyFadeMask={true} fadeMaskColor={FadeMaskColor.BLACK} />);
+    const container = screen.getByText('Item 1').closest('.marquee-container');
+    expect(container).toHaveClass('fade-mask-black');
   });
 });

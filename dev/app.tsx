@@ -1,76 +1,90 @@
 import React, { useState } from 'react';
-import { createRoot } from 'react-dom/client';
 import {
   BasicMarquee,
+  ControlPanel,
   HorizontalMarquee,
   ItemManager,
   TestMarquee,
   TestVerticalMarquee,
+  EnumExample,
 } from './components';
 import './styles.css';
 
-interface MarqueeItem {
-  id: number;
-  text: string;
-  color: number;
-}
-
-const initialItems: MarqueeItem[] = [
-  { id: 1, text: '1. 🎉 Welcome to React Marquee Master!', color: 1 },
-  { id: 2, text: '2. ⚡ This is a smooth scrolling text component', color: 2 },
-  { id: 3, text: '3. 🚀 Built with TypeScript and React', color: 3 },
-  { id: 4, text: '4. 📢 Perfect for announcements and news', color: 4 },
-  { id: 5, text: '5. 🛠️ Easy to customize and use', color: 1 },
-  { id: 6, text: '6. ♾️ Smooth infinite scrolling effect', color: 2 },
-  { id: 7, text: '7. ✨ With beautiful fade masks', color: 3 },
-  { id: 8, text: '8. 🎯 No jerky movements, just smooth flow', color: 4 },
-];
-
-// Configuration array - add the marquee types you want to test
-const activeMarquees: string[] = ['basic', 'horizontal', 'test', 'test-vertical'];
-
-// Main App Component
 const App: React.FC = () => {
-  const [items, setItems] = useState<MarqueeItem[]>(initialItems);
+  const [activeMarquee, setActiveMarquee] = useState<string>('basic');
+  const [marqueeItems, setMarqueeItems] = useState([
+    { id: 1, text: 'Welcome to React Marquee!', color: 1 },
+    { id: 2, text: 'This is a powerful and flexible marquee component.', color: 2 },
+    { id: 3, text: 'You can customize it in many ways.', color: 3 },
+    { id: 4, text: 'Try different directions and speeds!', color: 4 },
+  ]);
 
-  const renderMarquee = (type: string) => {
-    switch (type) {
+  const renderMarquee = () => {
+    switch (activeMarquee) {
       case 'basic':
-        return <BasicMarquee key={type} items={items} />;
+        return <BasicMarquee items={marqueeItems} />;
       case 'horizontal':
-        return <HorizontalMarquee key={type} items={items} />;
+        return <HorizontalMarquee items={marqueeItems} />;
+      case 'item-manager':
+        return <ItemManager items={marqueeItems} onItemsChange={setMarqueeItems} />;
       case 'test':
-        return <TestMarquee key={type} items={items} />;
+        return <TestMarquee items={marqueeItems} />;
       case 'test-vertical':
-        return <TestVerticalMarquee key={type} items={items} />;
+        return <TestVerticalMarquee items={marqueeItems} />;
+      case 'enum-example':
+        return <EnumExample />;
       default:
-        return null;
+        return <BasicMarquee items={marqueeItems} />;
     }
   };
 
   return (
-    <div className="container">
-      <h1>React Marquee Master - Live Development Demo</h1>
-      <p>This is a live development environment to test the React Marquee component.</p>
-      <p>
-        <strong>Active Marquees:</strong> Basic (vertical), Horizontal, Test (smart scrolling), and
-        Test Vertical
-      </p>
+    <div className="app">
+      <header className="app-header">
+        <h1>React Marquee Demo</h1>
+        <nav className="nav-tabs">
+          <button
+            className={activeMarquee === 'basic' ? 'active' : ''}
+            onClick={() => setActiveMarquee('basic')}
+          >
+            Basic
+          </button>
+          <button
+            className={activeMarquee === 'horizontal' ? 'active' : ''}
+            onClick={() => setActiveMarquee('horizontal')}
+          >
+            Horizontal
+          </button>
+          <button
+            className={activeMarquee === 'item-manager' ? 'active' : ''}
+            onClick={() => setActiveMarquee('item-manager')}
+          >
+            Item Manager
+          </button>
+          <button
+            className={activeMarquee === 'test' ? 'active' : ''}
+            onClick={() => setActiveMarquee('test')}
+          >
+            Test
+          </button>
+          <button
+            className={activeMarquee === 'test-vertical' ? 'active' : ''}
+            onClick={() => setActiveMarquee('test-vertical')}
+          >
+            Test Vertical
+          </button>
+          <button
+            className={activeMarquee === 'enum-example' ? 'active' : ''}
+            onClick={() => setActiveMarquee('enum-example')}
+          >
+            Enum Examples
+          </button>
+        </nav>
+      </header>
 
-      {/* Item Manager - Controls all marquees */}
-      <ItemManager items={items} onItemsChange={setItems} />
-
-      {/* Render all marquees with shared items */}
-      {activeMarquees.map(renderMarquee)}
+      <main className="app-main">{renderMarquee()}</main>
     </div>
   );
 };
 
-// Initialize the app
-document.addEventListener('DOMContentLoaded', () => {
-  const container = document.getElementById('root');
-  if (container) {
-    const root = createRoot(container);
-    root.render(<App />);
-  }
-});
+export default App;

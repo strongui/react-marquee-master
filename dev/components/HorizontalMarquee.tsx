@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ControlPanel } from './ControlPanel';
-import Marquee from '../../src/Marquee';
+import Marquee, { MarqueeDirection, FadeMaskColor } from '../../src/Marquee';
 
 interface MarqueeItem {
   id: number;
@@ -15,11 +15,11 @@ interface HorizontalMarqueeProps {
 export const HorizontalMarquee: React.FC<HorizontalMarqueeProps> = ({ items }) => {
   const [state, setState] = useState({
     paused: false,
-    direction: 'left' as 'left' | 'right',
+    direction: MarqueeDirection.LEFT as MarqueeDirection,
     speed: 40,
     pauseOnHover: false,
     pauseOnItemHover: false,
-    fadeMask: 'white' as 'none' | 'black' | 'white',
+    fadeMask: FadeMaskColor.WHITE as FadeMaskColor,
   });
 
   const handlePause = () => {
@@ -31,7 +31,7 @@ export const HorizontalMarquee: React.FC<HorizontalMarqueeProps> = ({ items }) =
   };
 
   const handleDirectionChange = (direction: string) => {
-    setState((prev) => ({ ...prev, direction: direction as 'left' | 'right' }));
+    setState((prev) => ({ ...prev, direction: direction as MarqueeDirection }));
   };
 
   const handleSpeedChange = (speed: number) => {
@@ -46,7 +46,7 @@ export const HorizontalMarquee: React.FC<HorizontalMarqueeProps> = ({ items }) =
     setState((prev) => ({ ...prev, pauseOnItemHover: enabled }));
   };
 
-  const handleFadeMaskChange = (fadeMask: 'none' | 'black' | 'white') => {
+  const handleFadeMaskChange = (fadeMask: FadeMaskColor) => {
     setState((prev) => ({ ...prev, fadeMask }));
   };
 
@@ -73,8 +73,10 @@ export const HorizontalMarquee: React.FC<HorizontalMarqueeProps> = ({ items }) =
           height={80}
           pauseOnHover={state.pauseOnHover}
           pauseOnItemHover={state.pauseOnHover}
-          applyFadeMask={state.fadeMask !== 'none'}
-          fadeMaskColor={state.fadeMask === 'none' ? 'white' : state.fadeMask}
+          applyFadeMask={state.fadeMask !== FadeMaskColor.NONE}
+          fadeMaskColor={
+            state.fadeMask === FadeMaskColor.NONE ? FadeMaskColor.WHITE : state.fadeMask
+          }
           onPause={() => console.info('Horizontal marquee paused')}
           onResume={() => console.info('Horizontal marquee resumed')}
           onMarqueeHover={() => console.info('Horizontal marquee hovered')}

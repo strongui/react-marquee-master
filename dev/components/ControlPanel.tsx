@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
+import { MarqueeDirection, FadeMaskColor } from '../../src/Marquee';
 
 interface ControlPanelProps {
   title: string;
   onPause: () => void;
   onResume: () => void;
-  onDirectionChange?: (direction: 'up' | 'down' | 'left' | 'right') => void;
+  onDirectionChange?: (direction: MarqueeDirection) => void;
   onSpeedChange?: (speed: number) => void;
   onBothDirectionChange?: (horizontal: string, vertical: string) => void;
   onAddItem?: () => void;
@@ -12,7 +13,7 @@ interface ControlPanelProps {
   onToggleReverse?: () => void;
   onTogglePauseOnHover?: (enabled: boolean) => void;
   onTogglePauseOnItemHover?: (enabled: boolean) => void;
-  onFadeMaskChange?: (fadeMask: 'none' | 'black' | 'white') => void;
+  onFadeMaskChange?: (fadeMask: FadeMaskColor) => void;
   currentState: any;
   type: string;
 }
@@ -52,16 +53,16 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
     if (type === 'horizontal') {
       return (
         <>
-          <button onClick={() => onDirectionChange('left')}>← Left</button>
-          <button onClick={() => onDirectionChange('right')}>→ Right</button>
+          <button onClick={() => onDirectionChange(MarqueeDirection.LEFT)}>← Left</button>
+          <button onClick={() => onDirectionChange(MarqueeDirection.RIGHT)}>→ Right</button>
         </>
       );
     } else {
       // Default to vertical (up/down) for basic and other types
       return (
         <>
-          <button onClick={() => onDirectionChange('up')}>↑ Up</button>
-          <button onClick={() => onDirectionChange('down')}>↓ Down</button>
+          <button onClick={() => onDirectionChange(MarqueeDirection.UP)}>↑ Up</button>
+          <button onClick={() => onDirectionChange(MarqueeDirection.DOWN)}>↓ Down</button>
         </>
       );
     }
@@ -129,22 +130,22 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
           <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
             <span style={{ fontSize: '14px', marginRight: '8px' }}>Fade Mask:</span>
             <button
-              onClick={() => onFadeMaskChange('none')}
-              className={currentState.fadeMask === 'none' ? 'active' : ''}
+              onClick={() => onFadeMaskChange(FadeMaskColor.NONE)}
+              className={currentState.fadeMask === FadeMaskColor.NONE ? 'active' : ''}
               style={{ padding: '6px 12px', fontSize: '12px' }}
             >
               None
             </button>
             <button
-              onClick={() => onFadeMaskChange('black')}
-              className={currentState.fadeMask === 'black' ? 'active' : ''}
+              onClick={() => onFadeMaskChange(FadeMaskColor.BLACK)}
+              className={currentState.fadeMask === FadeMaskColor.BLACK ? 'active' : ''}
               style={{ padding: '6px 12px', fontSize: '12px' }}
             >
               Black
             </button>
             <button
-              onClick={() => onFadeMaskChange('white')}
-              className={currentState.fadeMask === 'white' ? 'active' : ''}
+              onClick={() => onFadeMaskChange(FadeMaskColor.WHITE)}
+              className={currentState.fadeMask === FadeMaskColor.WHITE ? 'active' : ''}
               style={{ padding: '6px 12px', fontSize: '12px' }}
             >
               White

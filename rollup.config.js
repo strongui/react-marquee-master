@@ -12,7 +12,7 @@ import nested from 'postcss-nested';
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
-export default {
+const defaultConfig = {
   input: './src/index.ts',
 
   // Specify here external modules which you don't want to include in your bundle (for instance: 'lodash', 'moment' etc.)
@@ -42,16 +42,18 @@ export default {
 
   output: [
     {
-      exports: 'default',
+      exports: 'named',
       file: pkg.main,
       format: 'cjs',
       sourcemap: true,
     },
     {
-      exports: 'default',
+      exports: 'named',
       file: pkg.module,
       format: 'es',
       sourcemap: true,
     },
   ],
 };
+
+export default defaultConfig;
