@@ -1,12 +1,6 @@
 import React, { useState } from 'react'
-import Marquee, { FadeMaskColor, MarqueeDirection } from '../../src/Marquee'
+import Marquee, { FadeMaskColor, MarqueeDirection, MarqueeItem } from '../../src/Marquee'
 import { ControlPanel } from './ControlPanel'
-
-interface MarqueeItem {
-  id: number
-  text: string
-  color: number
-}
 
 interface HorizontalMarqueeProps {
   items: MarqueeItem[]
@@ -16,7 +10,7 @@ export const HorizontalMarquee: React.FC<HorizontalMarqueeProps> = ({ items }) =
   const [state, setState] = useState({
     paused: false,
     direction: MarqueeDirection.LEFT as MarqueeDirection,
-    speed: 5,
+    speed: 10,
     pauseOnHover: false,
     pauseOnItemHover: false,
     fadeMask: FadeMaskColor.WHITE as FadeMaskColor,

@@ -18,6 +18,23 @@ export enum FadeMaskColor {
   BLACK = 'black',
 }
 
+export interface MarqueeItemObject {
+  color?: number
+  icon?: string
+  id: number
+  text: string
+}
+
+export interface DummyItem {
+  isDummy: true
+  text: string
+  id: string
+  width?: number
+  height?: number
+}
+
+export type MarqueeItem = string | JSX.Element | MarqueeItemObject | DummyItem
+
 export interface IMarqueeProps {
   delay?: number
   direction?: MarqueeDirection
@@ -26,7 +43,7 @@ export interface IMarqueeProps {
   marqueeClassName?: string
   marqueeContainerClassName?: string
   marqueeItemClassName?: string
-  marqueeItems: Array<string | JSX.Element | { text: string; color?: number; id?: number }>
+  marqueeItems: MarqueeItem[]
   minHeight?: number
   paused?: boolean
   pauseOnHover?: boolean
@@ -36,7 +53,7 @@ export interface IMarqueeProps {
   onPause?: () => void
   onResume?: () => void
   onMarqueeHover?: () => void
-  onMarqueeItemHover?: (item: any, index: number) => void
+  onMarqueeItemHover?: (item: MarqueeItem, index: number) => void
 }
 
 const marqueeDefaults = {
@@ -53,24 +70,6 @@ const marqueeDefaults = {
 const initState = (props: IMarqueeProps) => {
   const marqueeItems = props.marqueeItems || marqueeDefaults.marqueeItems
 
-  // Always inject dummy item with size 0/0 initially
-  // We'll change its size to non-zero only when needed
-  const dummyItem = {
-    text: '',
-    isDummy: true,
-    width: 0,
-    height: 0,
-    id: Date.now() + Math.floor(Math.random() * 1000), // Unique ID
-  }
-
-  // For UP scrolling: dummy goes at BEGINNING (top) so items can scroll up smoothly
-  // For DOWN scrolling: dummy goes at END (bottom) so items can scroll down smoothly
-  // For LEFT scrolling: dummy goes at BEGINNING (left) so items can scroll left smoothly
-  // For RIGHT scrolling: dummy goes at END (right) so items can scroll right smoothly
-  const direction = props.direction || marqueeDefaults.direction
-  const isHorizontal = direction === MarqueeDirection.LEFT || direction === MarqueeDirection.RIGHT
-  const isVertical = direction === MarqueeDirection.UP || direction === MarqueeDirection.DOWN
-
   // Don't add dummy item initially - let the ResizeObserver decide if it's needed
   let itemsWithDummy = [...marqueeItems]
 
@@ -83,15 +82,74 @@ const initState = (props: IMarqueeProps) => {
   }
 }
 
+const dummyItemTemplate: DummyItem = {
+  isDummy: true,
+  text: '',
+  id: 'dummy-spacer',
+}
+
 export default function Marquee(props: IMarqueeProps) {
   const marqueeContainerRef = useRef<HTMLDivElement>(null)
   const marqueeRef = useRef<HTMLDivElement>(null)
+
+  // Refs for each marquee item - direct access without DOM traversal
+  const itemRefs = useRef<Map<string | number, HTMLDivElement>>(new Map())
+
+  // Static dummy item template - only dimensions change
+
+  // Type guard function for dummy items
+  const isDummyItem = (item: MarqueeItem): item is DummyItem => {
+    return typeof item === 'object' && item !== null && 'isDummy' in item && item.isDummy === true
+  }
+
+  // Helper function to parse marquee items and extract text, color, and icon
+  const parseMarqueeItem = useCallback((marqueeItem: MarqueeItem) => {
+    let itemText: string | JSX.Element
+    let itemColor: number | undefined
+    let itemIcon: string | undefined
+
+    if (typeof marqueeItem === 'string') {
+      itemText = marqueeItem
+    } else if (React.isValidElement(marqueeItem)) {
+      itemText = marqueeItem
+    } else if (typeof marqueeItem === 'object' && 'text' in marqueeItem && typeof marqueeItem.text === 'string') {
+      itemText = marqueeItem.text
+      itemColor = (marqueeItem as MarqueeItemObject).color
+      itemIcon = (marqueeItem as MarqueeItemObject).icon
+    } else {
+      itemText = String(marqueeItem)
+    }
+
+    return { itemText, itemColor, itemIcon }
+  }, [])
+
+  // Register item ref for direct access
+  const registerItemRef = useCallback((key: string | number, element: HTMLDivElement | null) => {
+    if (element) {
+      itemRefs.current.set(key, element)
+    } else {
+      itemRefs.current.delete(key)
+    }
+  }, [])
+
+  // Get direction early for memoization
+  const direction = props.direction || marqueeDefaults.direction
+  const isHorizontal = direction === MarqueeDirection.LEFT || direction === MarqueeDirection.RIGHT
+  const isVertical = direction === MarqueeDirection.UP || direction === MarqueeDirection.DOWN
+
+  // Memoized dummy item styles - only height/width change
+  const getDummyItemStyle = useCallback(
+    (width: number, height: number) => ({
+      width: isHorizontal ? `${width}px` : 'auto',
+      height: isVertical ? `${height}px` : 'auto',
+    }),
+    [isHorizontal, isVertical]
+  )
 
   const [state, setState] = useState(initState(props))
   const [isHovered, setIsHovered] = useState(false)
   const [hoveredItemIndex, setHoveredItemIndex] = useState<number | null>(null)
   const [isUpdatingSpacer, setIsUpdatingSpacer] = useState(false) // Prevent ResizeObserver loops
-  const [isRecycling, setIsRecycling] = useState(false) // Prevent multiple recycling calls
   const { bottom, marqueeItems, top, left, right } = state
 
   // Sync props with internal state when items change
@@ -121,34 +179,34 @@ export default function Marquee(props: IMarqueeProps) {
       const isVertical = direction === MarqueeDirection.UP || direction === MarqueeDirection.DOWN
 
       if (isVertical) {
+        // VERTICAL LAYOUT (UP/DOWN)
         const containerHeight = container.offsetHeight
         const contentHeight = marquee.scrollHeight
         const needsSpacer = contentHeight < containerHeight
 
         if (needsSpacer) {
           const spacerHeight = containerHeight - contentHeight
-          console.log('🔍 [Marquee] SPACER: Adding dummy item with height:', spacerHeight)
+          console.log('🔍 [Marquee] VERTICAL SPACER: Adding dummy item with height:', spacerHeight)
 
           setIsUpdatingSpacer(true)
           setState(prev => {
             // Check if dummy item already exists
-            const hasDummy = prev.marqueeItems.some(item => (item as any).isDummy)
+            const hasDummy = prev.marqueeItems.some(isDummyItem)
 
             if (!hasDummy) {
               // Add dummy item at the correct position
               const direction = props.direction || marqueeDefaults.direction
               const newItems = [...prev.marqueeItems]
-              const dummyWithSize = {
-                isDummy: true,
+              const dummyWithSize: DummyItem = {
+                ...dummyItemTemplate,
                 width: 0,
                 height: spacerHeight,
-                id: Date.now() + Math.floor(Math.random() * 1000),
               }
 
-              if (direction === MarqueeDirection.UP || direction === MarqueeDirection.LEFT) {
-                newItems.unshift(dummyWithSize as any) // BEGINNING for UP/LEFT
+              if (direction === MarqueeDirection.UP) {
+                newItems.unshift(dummyWithSize) // BEGINNING for UP
               } else {
-                newItems.push(dummyWithSize as any) // END for DOWN/RIGHT
+                newItems.push(dummyWithSize) // END for DOWN
               }
 
               return { ...prev, marqueeItems: newItems }
@@ -157,18 +215,70 @@ export default function Marquee(props: IMarqueeProps) {
               return {
                 ...prev,
                 marqueeItems: prev.marqueeItems.map(item =>
-                  (item as any).isDummy ? { ...item, height: spacerHeight } : item
+                  isDummyItem(item) ? { ...item, height: spacerHeight } : item
                 ),
               }
             }
           })
           setTimeout(() => setIsUpdatingSpacer(false), 100)
         } else {
-          console.log('🔍 [Marquee] SPACER: No spacer needed, removing dummy item')
+          console.log('🔍 [Marquee] VERTICAL SPACER: No spacer needed, removing dummy item')
           setIsUpdatingSpacer(true)
           setState(prev => ({
             ...prev,
-            marqueeItems: prev.marqueeItems.filter(item => !(item as any).isDummy),
+            marqueeItems: prev.marqueeItems.filter(item => !isDummyItem(item)),
+          }))
+          setTimeout(() => setIsUpdatingSpacer(false), 100)
+        }
+      } else {
+        // HORIZONTAL LAYOUT (LEFT/RIGHT)
+        const containerWidth = container.offsetWidth
+        const contentWidth = marquee.scrollWidth
+        const needsSpacer = contentWidth < containerWidth
+
+        if (needsSpacer) {
+          const spacerWidth = containerWidth - contentWidth
+          console.log('🔍 [Marquee] HORIZONTAL SPACER: Adding dummy item with width:', spacerWidth)
+
+          setIsUpdatingSpacer(true)
+          setState(prev => {
+            // Check if dummy item already exists
+            const hasDummy = prev.marqueeItems.some(isDummyItem)
+
+            if (!hasDummy) {
+              // Add dummy item at the correct position
+              const direction = props.direction || marqueeDefaults.direction
+              const newItems = [...prev.marqueeItems]
+              const dummyWithSize: DummyItem = {
+                ...dummyItemTemplate,
+                width: spacerWidth,
+                height: 0,
+              }
+
+              if (direction === MarqueeDirection.LEFT) {
+                newItems.unshift(dummyWithSize) // BEGINNING for LEFT
+              } else {
+                newItems.push(dummyWithSize) // END for RIGHT
+              }
+
+              return { ...prev, marqueeItems: newItems }
+            } else {
+              // Update existing dummy item size
+              return {
+                ...prev,
+                marqueeItems: prev.marqueeItems.map(item =>
+                  isDummyItem(item) ? { ...item, width: spacerWidth } : item
+                ),
+              }
+            }
+          })
+          setTimeout(() => setIsUpdatingSpacer(false), 100)
+        } else {
+          console.log('🔍 [Marquee] HORIZONTAL SPACER: No spacer needed, removing dummy item')
+          setIsUpdatingSpacer(true)
+          setState(prev => ({
+            ...prev,
+            marqueeItems: prev.marqueeItems.filter(item => !isDummyItem(item)),
           }))
           setTimeout(() => setIsUpdatingSpacer(false), 100)
         }
@@ -190,14 +300,11 @@ export default function Marquee(props: IMarqueeProps) {
       clearTimeout(timer)
       observer.disconnect()
     }
-  }, [props.direction]) // Only depend on direction, not marqueeItems
+  }, [props.direction, props.marqueeItems])
 
   const { height, marqueeClassName, marqueeContainerClassName, marqueeItemClassName, minHeight } = props
 
   const delay = props.delay || marqueeDefaults.delay
-  const direction = props.direction || marqueeDefaults.direction
-  const isHorizontal = direction === MarqueeDirection.LEFT || direction === MarqueeDirection.RIGHT
-  const isVertical = direction === MarqueeDirection.UP || direction === MarqueeDirection.DOWN
   const paused = props.paused || false
   const pauseOnHover = props.pauseOnHover || marqueeDefaults.pauseOnHover
   const pauseOnItemHover = props.pauseOnItemHover || marqueeDefaults.pauseOnItemHover
@@ -226,39 +333,27 @@ export default function Marquee(props: IMarqueeProps) {
     marqueeStyle.left = `${left}px`
   }
 
-  const getFirstMarqueeItemSize = () => {
-    // Find the first NON-DUMMY item
-    const marqueeElement = marqueeRef.current
-    if (!marqueeElement) return 0
-
-    for (let i = 0; i < marqueeElement.children.length; i++) {
-      const child = marqueeElement.children[i] as HTMLDivElement
-      if (child && !child.classList.contains('marquee-dummy-item')) {
-        if (isHorizontal) {
-          return child.offsetWidth
-        }
-        return child.offsetHeight
+  const getFirstMarqueeItemSize = useCallback(() => {
+    // Get first non-dummy item size using refs
+    for (const [, itemRef] of itemRefs.current) {
+      if (itemRef && !itemRef.classList.contains('marquee-dummy-item')) {
+        return isHorizontal ? itemRef.offsetWidth : itemRef.offsetHeight
       }
     }
     return 0
-  }
+  }, [isHorizontal])
 
-  const getLastMarqueeItemSize = () => {
-    // Find the last NON-DUMMY item
-    const marqueeElement = marqueeRef.current
-    if (!marqueeElement) return 0
-
-    for (let i = marqueeElement.children.length - 1; i >= 0; i--) {
-      const child = marqueeElement.children[i] as HTMLDivElement
-      if (child && !child.classList.contains('marquee-dummy-item')) {
-        if (isHorizontal) {
-          return child.offsetWidth
-        }
-        return child.offsetHeight
+  const getLastMarqueeItemSize = useCallback(() => {
+    // Get last non-dummy item size using refs
+    const entries = Array.from(itemRefs.current.entries())
+    for (let i = entries.length - 1; i >= 0; i--) {
+      const [, itemRef] = entries[i]
+      if (itemRef && !itemRef.classList.contains('marquee-dummy-item')) {
+        return isHorizontal ? itemRef.offsetWidth : itemRef.offsetHeight
       }
     }
     return 0
-  }
+  }, [isHorizontal])
 
   // Determine if marquee should be paused due to hover
   const shouldPause = paused || (pauseOnHover && isHovered) || (pauseOnItemHover && hoveredItemIndex !== null)
@@ -293,29 +388,29 @@ export default function Marquee(props: IMarqueeProps) {
 
     let nextPropValue = state[nextProp]
 
-    // Next tick value - smaller steps for smooth scrolling
-    nextPropValue -= 0.5
+    // Next tick value - 1 pixel movement for smooth scrolling
+    nextPropValue -= 1
     const marqueeItemSize =
       direction === MarqueeDirection.UP || direction === MarqueeDirection.LEFT
         ? getFirstMarqueeItemSize()
         : getLastMarqueeItemSize()
 
+    // Check if an item has passed completely off-screen
     const marqueeItemPassed = (marqueeItemSize ? Math.floor(Math.abs(nextPropValue) / marqueeItemSize) : 0) > 0
 
-    // Handle recycling when item passes
-    if (marqueeItemPassed && !isRecycling) {
-      // PREVENT MULTIPLE RECYCLING CALLS
-      setIsRecycling(true)
-
+    // Move items like a conveyor belt for infinite scrolling
+    if (marqueeItemPassed) {
       if (direction === MarqueeDirection.UP || direction === MarqueeDirection.LEFT) {
-        nextMarqueeItems.push(nextMarqueeItems.shift() as any)
+        // For UP/LEFT: move first item to end
+        const shiftedItem = nextMarqueeItems.shift()
+        if (shiftedItem) nextMarqueeItems.push(shiftedItem)
       } else {
-        nextMarqueeItems.unshift(nextMarqueeItems.pop() as any)
+        // For DOWN/RIGHT: move last item to beginning
+        const poppedItem = nextMarqueeItems.pop()
+        if (poppedItem) nextMarqueeItems.unshift(poppedItem)
       }
+      // Reset position after moving item
       nextPropValue = nextPropValue + marqueeItemSize
-
-      // Reset recycling flag after state update
-      setTimeout(() => setIsRecycling(false), 50)
     }
 
     setState(s => {
@@ -329,52 +424,38 @@ export default function Marquee(props: IMarqueeProps) {
     })
 
     // Animation complete
-  })
+  }, [shouldPause, isUpdatingSpacer, marqueeItems, direction, state, getLastMarqueeItemSize, getFirstMarqueeItemSize])
 
   // Use the stable callback with useInterval
-  useInterval(animationFunction, shouldPause ? null : delay)
+  useInterval(animationFunction, shouldPause ? null : delay || marqueeDefaults.delay)
 
   const marqueeItemElms = marqueeItems.map((marqueeItem, i) => {
     // Handle dummy items
-    if (marqueeItem && typeof marqueeItem === 'object' && 'isDummy' in marqueeItem) {
+    if (marqueeItem && typeof marqueeItem === 'object' && 'isDummy' in marqueeItem && marqueeItem.isDummy) {
       // Use the height/width from our calculated state instead of recalculating
-      const dummyWidth = (marqueeItem as any).width || 0
-      const dummyHeight = (marqueeItem as any).height || 0
+      const dummyItem = marqueeItem as DummyItem
+      const dummyWidth = dummyItem.width || 0
+      const dummyHeight = dummyItem.height || 0
 
       return (
         <div
+          ref={el => registerItemRef(`dummy-${i}`, el)}
           className={`marquee-item marquee-dummy-item${marqueeItemClassName ? ` ${marqueeItemClassName}` : ''}`}
           key={`dummy-${i}`}
-          style={{
-            width: isHorizontal ? `${dummyWidth}px` : 'auto',
-            height: isVertical ? `${dummyHeight}px` : 'auto',
-            opacity: 0,
-            pointerEvents: 'none',
-            flexShrink: 0,
-          }}
+          style={getDummyItemStyle(dummyWidth, dummyHeight)}
         />
       )
     }
 
-    // Handle different item types for real items
-    let itemText: string | JSX.Element
-    let itemColor: number | undefined
+    // Parse item using helper function
+    const { itemText, itemColor, itemIcon } = parseMarqueeItem(marqueeItem)
 
-    if (typeof marqueeItem === 'string') {
-      itemText = marqueeItem
-    } else if (React.isValidElement(marqueeItem)) {
-      itemText = marqueeItem
-    } else if (typeof marqueeItem === 'object' && 'text' in marqueeItem && typeof marqueeItem.text === 'string') {
-      itemText = marqueeItem.text
-      itemColor = (marqueeItem as any).color
-    } else {
-      itemText = String(marqueeItem)
-    }
-
+    const itemKey = itemColor ? `item-${itemColor}-${i}` : i
     return (
       <div
+        ref={el => registerItemRef(itemKey, el)}
         className={`marquee-item${marqueeItemClassName ? ` ${marqueeItemClassName}` : ''}`}
-        key={itemColor ? `item-${itemColor}-${i}` : i}
+        key={itemKey}
         data-color={itemColor}
         onMouseEnter={() => {
           if (pauseOnItemHover) {
@@ -388,6 +469,8 @@ export default function Marquee(props: IMarqueeProps) {
           }
         }}
       >
+        {itemIcon && <span className="marquee-item-icon">{itemIcon}</span>}
+        {itemIcon && <span className="marquee-item-separator"> </span>}
         {itemText}
       </div>
     )

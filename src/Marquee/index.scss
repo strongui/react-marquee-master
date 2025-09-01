@@ -17,16 +17,31 @@
 
       // Dummy item styling - completely invisible
       &.marquee-dummy-item {
-        opacity: 0 !important;
-        pointer-events: none !important;
+        opacity: 0;
+        pointer-events: none;
         user-select: none;
         visibility: hidden;
-        background: transparent !important;
-        border: none !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        display: block !important;
-        flex-shrink: 0 !important;
+        background: transparent;
+        border: none;
+        margin: 0;
+        padding: 0;
+        display: block;
+        flex-shrink: 0;
+      }
+
+      // Icon styling
+      .marquee-item-icon {
+        display: inline-block;
+        margin-right: 4px;
+        font-size: 1.1em;
+        vertical-align: middle;
+      }
+
+      // Separator styling
+      .marquee-item-separator {
+        display: inline-block;
+        margin-right: 4px;
+        vertical-align: middle;
       }
     }
   }
@@ -119,22 +134,12 @@
       }
 
       &::before {
-        background: linear-gradient(
-          180deg,
-          rgba(0, 0, 0, 0.6) 0%,
-          rgba(0, 0, 0, 0.3) 40%,
-          rgba(0, 0, 0, 0) 100%
-        );
+        background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0) 100%);
         top: 0;
       }
 
       &::after {
-        background: linear-gradient(
-          0deg,
-          rgba(0, 0, 0, 0.6) 0%,
-          rgba(0, 0, 0, 0.3) 40%,
-          rgba(0, 0, 0, 0) 100%
-        );
+        background: linear-gradient(0deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0) 100%);
         bottom: 0;
       }
     }
@@ -148,22 +153,12 @@
       }
 
       &::before {
-        background: linear-gradient(
-          90deg,
-          rgba(0, 0, 0, 0.6) 0%,
-          rgba(0, 0, 0, 0.3) 40%,
-          rgba(0, 0, 0, 0) 100%
-        );
+        background: linear-gradient(90deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0) 100%);
         left: 0;
       }
 
       &::after {
-        background: linear-gradient(
-          270deg,
-          rgba(0, 0, 0, 0.6) 0%,
-          rgba(0, 0, 0, 0.3) 40%,
-          rgba(0, 0, 0, 0) 100%
-        );
+        background: linear-gradient(270deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.3) 40%, rgba(0, 0, 0, 0) 100%);
         right: 0;
       }
     }

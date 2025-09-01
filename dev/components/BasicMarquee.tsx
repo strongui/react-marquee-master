@@ -1,12 +1,6 @@
 import React, { useState } from 'react'
-import Marquee, { FadeMaskColor, MarqueeDirection } from '../../src/Marquee'
+import Marquee, { FadeMaskColor, MarqueeDirection, MarqueeItem } from '../../src/Marquee'
 import { ControlPanel } from './ControlPanel'
-
-interface MarqueeItem {
-  id: number
-  text: string
-  color: number
-}
 
 interface BasicMarqueeProps {
   items: MarqueeItem[]
@@ -15,8 +9,8 @@ interface BasicMarqueeProps {
 export const BasicMarquee: React.FC<BasicMarqueeProps> = ({ items }) => {
   const [state, setState] = useState({
     paused: false,
-    direction: MarqueeDirection.UP,
-    speed: 5,
+    direction: MarqueeDirection.DOWN,
+    speed: 40,
     pauseOnHover: false,
     pauseOnItemHover: false,
     fadeMask: FadeMaskColor.WHITE,
