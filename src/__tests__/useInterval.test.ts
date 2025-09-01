@@ -48,12 +48,9 @@ describe('useInterval Hook', () => {
     const callback2 = jest.fn();
     const delay = 1000;
 
-    const { rerender } = renderHook(
-      ({ cb }) => useInterval(cb, delay),
-      {
-        initialProps: { cb: callback1 },
-      }
-    );
+    const { rerender } = renderHook(({ cb }) => useInterval(cb, delay), {
+      initialProps: { cb: callback1 },
+    });
 
     act(() => {
       jest.advanceTimersByTime(delay);

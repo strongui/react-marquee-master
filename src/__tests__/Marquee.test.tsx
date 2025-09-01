@@ -156,22 +156,19 @@ describe('Marquee Component', () => {
       { text: 'Object Item', color: 5 },
     ];
     render(<Marquee {...defaultProps} marqueeItems={mixedItems} />);
-    
+
     expect(screen.getByText('String Item')).toBeInTheDocument();
     expect(screen.getByText('JSX Item')).toBeInTheDocument();
     expect(screen.getByText('Object Item')).toBeInTheDocument();
   });
 
   it('applies data-color attribute to items with color property', () => {
-    const itemsWithColor = [
-      { text: 'Colored Item', color: 42 },
-      'Regular Item',
-    ];
+    const itemsWithColor = [{ text: 'Colored Item', color: 42 }, 'Regular Item'];
     render(<Marquee {...defaultProps} marqueeItems={itemsWithColor} />);
-    
+
     const coloredItem = screen.getByText('Colored Item');
     const regularItem = screen.getByText('Regular Item');
-    
+
     expect(coloredItem).toHaveAttribute('data-color', '42');
     expect(regularItem).not.toHaveAttribute('data-color');
   });
