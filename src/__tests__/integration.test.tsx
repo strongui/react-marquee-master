@@ -19,14 +19,9 @@ describe('Marquee Integration Tests', () => {
   });
 
   describe('Direction Integration', () => {
-    const directions = [
-      MarqueeDirection.UP,
-      MarqueeDirection.RIGHT,
-      MarqueeDirection.DOWN,
-      MarqueeDirection.LEFT,
-    ];
+    const directions = [MarqueeDirection.UP, MarqueeDirection.RIGHT, MarqueeDirection.DOWN, MarqueeDirection.LEFT];
 
-    directions.forEach((direction) => {
+    directions.forEach(direction => {
       it(`renders correctly with ${direction} direction`, () => {
         render(<Marquee marqueeItems={['Item 1', 'Item 2', 'Item 3']} direction={direction} />);
 
@@ -44,26 +39,14 @@ describe('Marquee Integration Tests', () => {
 
       // Test paused state
       const { rerender } = render(
-        <Marquee
-          marqueeItems={['Item 1', 'Item 2']}
-          paused={true}
-          onPause={onPause}
-          onResume={onResume}
-        />
+        <Marquee marqueeItems={['Item 1', 'Item 2']} paused={true} onPause={onPause} onResume={onResume} />
       );
 
       expect(screen.getByText('Item 1')).toBeInTheDocument();
       expect(screen.getByText('Item 2')).toBeInTheDocument();
 
       // Test non-paused state
-      rerender(
-        <Marquee
-          marqueeItems={['Item 1', 'Item 2']}
-          paused={false}
-          onPause={onPause}
-          onResume={onResume}
-        />
-      );
+      rerender(<Marquee marqueeItems={['Item 1', 'Item 2']} paused={false} onPause={onPause} onResume={onResume} />);
 
       expect(screen.getByText('Item 1')).toBeInTheDocument();
       expect(screen.getByText('Item 2')).toBeInTheDocument();
@@ -72,13 +55,7 @@ describe('Marquee Integration Tests', () => {
     it('integrates pauseOnHover functionality', () => {
       const onMarqueeHover = jest.fn();
 
-      render(
-        <Marquee
-          marqueeItems={['Item 1', 'Item 2']}
-          pauseOnHover={true}
-          onMarqueeHover={onMarqueeHover}
-        />
-      );
+      render(<Marquee marqueeItems={['Item 1', 'Item 2']} pauseOnHover={true} onMarqueeHover={onMarqueeHover} />);
 
       const container = screen.getByText('Item 1').closest('.marquee-container');
       expect(container).toBeInTheDocument();
@@ -93,11 +70,7 @@ describe('Marquee Integration Tests', () => {
       const onMarqueeItemHover = jest.fn();
 
       render(
-        <Marquee
-          marqueeItems={['Item 1', 'Item 2']}
-          pauseOnItemHover={true}
-          onMarqueeItemHover={onMarqueeItemHover}
-        />
+        <Marquee marqueeItems={['Item 1', 'Item 2']} pauseOnItemHover={true} onMarqueeItemHover={onMarqueeItemHover} />
       );
 
       const item = screen.getByText('Item 1');
@@ -141,13 +114,7 @@ describe('Marquee Integration Tests', () => {
     });
 
     it('integrates fade mask functionality', () => {
-      render(
-        <Marquee
-          marqueeItems={['Item 1']}
-          applyFadeMask={true}
-          fadeMaskColor={FadeMaskColor.BLACK}
-        />
-      );
+      render(<Marquee marqueeItems={['Item 1']} applyFadeMask={true} fadeMaskColor={FadeMaskColor.BLACK} />);
 
       const container = document.querySelector('.marquee-container');
       expect(container).toHaveClass('fade-mask-black');
@@ -219,17 +186,10 @@ describe('Marquee Integration Tests', () => {
 
   describe('Dummy Item Integration', () => {
     it('integrates dummy items for all direction types', () => {
-      const directions = [
-        MarqueeDirection.UP,
-        MarqueeDirection.RIGHT,
-        MarqueeDirection.DOWN,
-        MarqueeDirection.LEFT,
-      ];
+      const directions = [MarqueeDirection.UP, MarqueeDirection.RIGHT, MarqueeDirection.DOWN, MarqueeDirection.LEFT];
 
-      directions.forEach((direction) => {
-        const { unmount } = render(
-          <Marquee marqueeItems={['Item 1', 'Item 2']} direction={direction} />
-        );
+      directions.forEach(direction => {
+        const { unmount } = render(<Marquee marqueeItems={['Item 1', 'Item 2']} direction={direction} />);
 
         const dummyItems = document.querySelectorAll('.marquee-dummy-item');
         expect(dummyItems.length).toBe(1);
@@ -244,9 +204,7 @@ describe('Marquee Integration Tests', () => {
 
     it('integrates dummy item positioning for different directions', () => {
       // Test UP direction (dummy at end)
-      const { rerender } = render(
-        <Marquee marqueeItems={['Real Item']} direction={MarqueeDirection.UP} />
-      );
+      const { rerender } = render(<Marquee marqueeItems={['Real Item']} direction={MarqueeDirection.UP} />);
 
       let marqueeItems = document.querySelectorAll('.marquee-item');
       let dummyItem = document.querySelector('.marquee-dummy-item');
@@ -276,14 +234,7 @@ describe('Marquee Integration Tests', () => {
 
       // Test that callbacks can be passed without causing errors
       expect(() => {
-        render(
-          <Marquee
-            marqueeItems={['Test Item']}
-            pauseOnHover={true}
-            pauseOnItemHover={true}
-            {...callbacks}
-          />
-        );
+        render(<Marquee marqueeItems={['Test Item']} pauseOnHover={true} pauseOnItemHover={true} {...callbacks} />);
       }).not.toThrow();
 
       expect(screen.getByText('Test Item')).toBeInTheDocument();

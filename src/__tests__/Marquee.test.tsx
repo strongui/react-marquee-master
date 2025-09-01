@@ -84,7 +84,7 @@ describe('Marquee Component', () => {
   it('handles custom item className', () => {
     render(<Marquee {...defaultProps} marqueeItemClassName="custom-item" />);
     const items = screen.getAllByText(/Item \d/);
-    items.forEach((item) => {
+    items.forEach(item => {
       expect(item).toHaveClass('custom-item');
     });
   });
@@ -150,11 +150,7 @@ describe('Marquee Component', () => {
   });
 
   it('handles mixed item types in the same marquee', () => {
-    const mixedItems = [
-      'String Item',
-      <span key="jsx">JSX Item</span>,
-      { text: 'Object Item', color: 5 },
-    ];
+    const mixedItems = ['String Item', <span key="jsx">JSX Item</span>, { text: 'Object Item', color: 5 }];
     render(<Marquee {...defaultProps} marqueeItems={mixedItems} />);
 
     expect(screen.getByText('String Item')).toBeInTheDocument();

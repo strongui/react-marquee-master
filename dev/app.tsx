@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   BasicMarquee,
-  ControlPanel,
   HorizontalMarquee,
   ItemManager,
   TestMarquee,

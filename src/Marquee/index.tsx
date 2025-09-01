@@ -102,8 +102,7 @@ export default function Marquee(props: IMarqueeProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.marqueeItems, props.inverseMarqueeItems]);
 
-  const { height, marqueeClassName, marqueeContainerClassName, marqueeItemClassName, minHeight } =
-    props;
+  const { height, marqueeClassName, marqueeContainerClassName, marqueeItemClassName, minHeight } = props;
 
   const delay = props.delay || marqueeDefaults.delay;
   const direction = props.direction || marqueeDefaults.direction;
@@ -112,8 +111,7 @@ export default function Marquee(props: IMarqueeProps) {
   const paused = props.paused || false;
   const pauseOnHover = props.pauseOnHover || marqueeDefaults.pauseOnHover;
   const pauseOnItemHover = props.pauseOnItemHover || marqueeDefaults.pauseOnItemHover;
-  const applyFadeMask =
-    props.applyFadeMask !== undefined ? props.applyFadeMask : marqueeDefaults.applyFadeMask;
+  const applyFadeMask = props.applyFadeMask !== undefined ? props.applyFadeMask : marqueeDefaults.applyFadeMask;
   const fadeMaskColor = props.fadeMaskColor || marqueeDefaults.fadeMaskColor;
   const onMarqueeHover = props.onMarqueeHover;
   const onMarqueeItemHover = props.onMarqueeItemHover;
@@ -161,8 +159,7 @@ export default function Marquee(props: IMarqueeProps) {
   };
 
   // Determine if marquee should be paused due to hover
-  const shouldPause =
-    paused || (pauseOnHover && isHovered) || (pauseOnItemHover && hoveredItemIndex !== null);
+  const shouldPause = paused || (pauseOnHover && isHovered) || (pauseOnItemHover && hoveredItemIndex !== null);
 
   userInterval(
     () => {
@@ -199,8 +196,7 @@ export default function Marquee(props: IMarqueeProps) {
           ? getFirstMarqueeItemSize()
           : getLastMarqueeItemSize();
 
-      const marqueeItemPassed =
-        (marqueeItemSize ? Math.floor(Math.abs(nextPropValue) / marqueeItemSize) : 0) > 0;
+      const marqueeItemPassed = (marqueeItemSize ? Math.floor(Math.abs(nextPropValue) / marqueeItemSize) : 0) > 0;
 
       if (marqueeItemPassed) {
         if (direction === MarqueeDirection.UP || direction === MarqueeDirection.LEFT) {
@@ -211,7 +207,7 @@ export default function Marquee(props: IMarqueeProps) {
         nextPropValue = nextPropValue + marqueeItemSize;
       }
 
-      setState((s) => ({
+      setState(s => ({
         ...s,
         [nextProp]: nextPropValue,
         marqueeItems: nextMarqueeItems,
@@ -285,11 +281,7 @@ export default function Marquee(props: IMarqueeProps) {
       itemText = marqueeItem;
     } else if (React.isValidElement(marqueeItem)) {
       itemText = marqueeItem;
-    } else if (
-      typeof marqueeItem === 'object' &&
-      'text' in marqueeItem &&
-      typeof marqueeItem.text === 'string'
-    ) {
+    } else if (typeof marqueeItem === 'object' && 'text' in marqueeItem && typeof marqueeItem.text === 'string') {
       itemText = marqueeItem.text;
       itemColor = (marqueeItem as any).color;
     } else {
@@ -320,7 +312,7 @@ export default function Marquee(props: IMarqueeProps) {
 
   return (
     <div
-      key={`marquee-${marqueeItems.length}-${JSON.stringify(marqueeItems.map((item) => (typeof item === 'object' && 'id' in item ? item.id : item)))}`}
+      key={`marquee-${marqueeItems.length}-${JSON.stringify(marqueeItems.map(item => (typeof item === 'object' && 'id' in item ? item.id : item)))}`}
       className={`marquee-container${isHorizontal ? ' horizontal' : ''}${
         applyFadeMask ? ` fade-mask-${fadeMaskColor}` : ''
       }${marqueeContainerClassName ? ` ${marqueeContainerClassName}` : ''}`}
@@ -338,11 +330,7 @@ export default function Marquee(props: IMarqueeProps) {
         }
       }}
     >
-      <div
-        className={`marquee${marqueeClassName ? ` ${marqueeClassName}` : ''}`}
-        ref={marqueeRef}
-        style={marqueeStyle}
-      >
+      <div className={`marquee${marqueeClassName ? ` ${marqueeClassName}` : ''}`} ref={marqueeRef} style={marqueeStyle}>
         {marqueeItemElms}
       </div>
     </div>

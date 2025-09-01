@@ -4,9 +4,7 @@ import Marquee, { MarqueeDirection, FadeMaskColor } from '../Marquee';
 
 describe('Marquee Index Export', () => {
   it('exports Marquee as default', () => {
-    const { container } = render(
-      <Marquee marqueeItems={['Test Item']} direction={MarqueeDirection.UP} />
-    );
+    const { container } = render(<Marquee marqueeItems={['Test Item']} direction={MarqueeDirection.UP} />);
     expect(container).toBeInTheDocument();
   });
 
