@@ -1,8 +1,8 @@
 import * as React from 'react'
-import userInterval from '../helpers/hookHelpers/useInterval'
+import useInterval from '../helpers/hookHelpers/useInterval'
 import './index.scss'
 
-const { useRef, useState, useEffect } = React
+const { useRef, useState, useEffect, useCallback } = React
 
 // Enums for better type safety and developer experience
 export enum MarqueeDirection {
@@ -63,22 +63,16 @@ const initState = (props: IMarqueeProps) => {
     id: Date.now() + Math.floor(Math.random() * 1000), // Unique ID
   }
 
-  // For left scrolling, dummy goes at the end (after real items)
-  // For right scrolling, dummy goes at the beginning (before real items)
-  // For up scrolling, dummy goes at the end (after real items)
-  // For down scrolling, dummy goes at the beginning (before real items)
+  // For UP scrolling: dummy goes at BEGINNING (top) so items can scroll up smoothly
+  // For DOWN scrolling: dummy goes at END (bottom) so items can scroll down smoothly
+  // For LEFT scrolling: dummy goes at BEGINNING (left) so items can scroll left smoothly
+  // For RIGHT scrolling: dummy goes at END (right) so items can scroll right smoothly
   const direction = props.direction || marqueeDefaults.direction
   const isHorizontal = direction === MarqueeDirection.LEFT || direction === MarqueeDirection.RIGHT
   const isVertical = direction === MarqueeDirection.UP || direction === MarqueeDirection.DOWN
 
+  // Don't add dummy item initially - let the ResizeObserver decide if it's needed
   let itemsWithDummy = [...marqueeItems]
-  if (isHorizontal || isVertical) {
-    if (direction === MarqueeDirection.LEFT || direction === MarqueeDirection.UP) {
-      itemsWithDummy.push(dummyItem as any)
-    } else {
-      itemsWithDummy.unshift(dummyItem as any)
-    }
-  }
 
   return {
     bottom: 0,
@@ -97,6 +91,7 @@ export default function Marquee(props: IMarqueeProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [hoveredItemIndex, setHoveredItemIndex] = useState<number | null>(null)
   const [isUpdatingSpacer, setIsUpdatingSpacer] = useState(false) // Prevent ResizeObserver loops
+  const [isRecycling, setIsRecycling] = useState(false) // Prevent multiple recycling calls
   const { bottom, marqueeItems, top, left, right } = state
 
   // Sync props with internal state when items change
@@ -109,180 +104,93 @@ export default function Marquee(props: IMarqueeProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.marqueeItems, props.inverseMarqueeItems])
 
-  // Use ResizeObserver to measure content and calculate spacer size after render
+  // CLEAN SPACER LOGIC - only calculates when container size changes
   useEffect(() => {
     if (!marqueeContainerRef.current || !marqueeRef.current) return
 
     const container = marqueeContainerRef.current
     const marquee = marqueeRef.current
 
-    let retryCount = 0
-    const calculateSpacerSize = () => {
-      // Only skip if we're in the middle of updating spacer state
-      if (isUpdatingSpacer) {
-        console.log('🔍 [Marquee] Skipping calculation - spacer update in progress')
+    // Calculate spacer ONCE when dimensions are ready
+    const calculateSpacerOnce = () => {
+      if (!container.offsetWidth || !container.offsetHeight || !marquee.scrollWidth || !marquee.scrollHeight) {
         return
       }
 
-      // Check if container is actually rendered and has dimensions
-      if (!container.offsetWidth || !container.offsetHeight) {
-        retryCount++
-        if (retryCount > 3) {
-          console.log('🔍 [Marquee] Too many retries, giving up')
-          return
-        }
-        console.log('🔍 [Marquee] Container not ready yet, retrying... (attempt ' + retryCount + ')')
-        // Retry after a short delay instead of giving up
-        setTimeout(() => calculateSpacerSize(), 50)
-        return
-      }
-
-      // Check if marquee content is also ready
-      if (!marquee.scrollWidth || !marquee.scrollHeight) {
-        retryCount++
-        if (retryCount > 3) {
-          console.log('🔍 [Marquee] Too many retries, giving up')
-          return
-        }
-        console.log('🔍 [Marquee] Marquee content not ready yet, retrying... (attempt ' + retryCount + ')')
-        setTimeout(() => calculateSpacerSize(), 50)
-        return
-      }
-
-      // Reset retry count on successful calculation
-      retryCount = 0
-
-      // Define direction variables first so we can use them in the early check
       const direction = props.direction || marqueeDefaults.direction
-      const isHorizontal = direction === MarqueeDirection.LEFT || direction === MarqueeDirection.RIGHT
       const isVertical = direction === MarqueeDirection.UP || direction === MarqueeDirection.DOWN
 
-      // LOG THE ACTUAL DIMENSIONS TO SEE WHAT'S HAPPENING
-      console.log('🔍 [Marquee] ACTUAL DIMENSIONS:')
-      console.log('  - Container Height:', container.offsetHeight)
-      console.log('  - Content Height:', marquee.scrollHeight)
-      console.log('  - Difference:', container.offsetHeight - marquee.scrollHeight)
-      console.log('  - Current Items:', marqueeItems.length)
-      console.log(
-        '  - Has Dummy:',
-        marqueeItems.some(item => (item as any).isDummy)
-      )
-
-      // LOG INDIVIDUAL ITEM HEIGHTS TO SEE WHY CONTENT IS SHORT
       if (isVertical) {
-        const realItems = marqueeItems.filter(item => !(item as any).isDummy)
-        console.log('🔍 [Marquee] ITEM HEIGHTS:')
-        realItems.forEach((item, index) => {
-          const itemElement = marquee.querySelector(`[data-item-id="${item.id}"]`) as HTMLElement
-          if (itemElement) {
-            console.log(`  - Item ${index + 1}: ${itemElement.offsetHeight}px`)
-          }
-        })
-        console.log('  - Total Real Items Height:', realItems.length * 50, 'px (expected)')
-      }
-
-      console.log('🔍 [Marquee] Calculating spacer size...')
-      console.log('🔍 [Marquee] Direction:', direction)
-      console.log('🔍 [Marquee] Is Horizontal:', isHorizontal)
-      console.log('🔍 [Marquee] Is Vertical:', isVertical)
-
-      if (isHorizontal) {
-        const containerWidth = container.offsetWidth
-        const contentWidth = marquee.scrollWidth
-
-        console.log('🔍 [Marquee] Horizontal - Container Width:', containerWidth)
-        console.log('🔍 [Marquee] Horizontal - Content Width:', contentWidth)
-        console.log('🔍 [Marquee] Horizontal - Needs Spacer:', contentWidth < containerWidth)
-
-        // If content doesn't fill container, calculate spacer width
-        if (contentWidth < containerWidth) {
-          const spacerWidth = containerWidth - contentWidth + 50 // Add some buffer
-          console.log('🔍 [Marquee] Horizontal - Adding spacer width:', spacerWidth)
-
-          // Update existing dummy item size
-          setIsUpdatingSpacer(true)
-          setState(prev => {
-            console.log('🔍 [Marquee] Horizontal - Updating dummy item size')
-            return {
-              ...prev,
-              marqueeItems: prev.marqueeItems.map(item =>
-                (item as any).isDummy ? { ...item, width: spacerWidth } : item
-              ),
-            }
-          })
-          // Reset flag after state update with longer delay to prevent ResizeObserver conflicts
-          setTimeout(() => setIsUpdatingSpacer(false), 200)
-        } else {
-          console.log('🔍 [Marquee] Horizontal - No spacer needed, keeping dummy at 0 width')
-        }
-      } else if (isVertical) {
         const containerHeight = container.offsetHeight
         const contentHeight = marquee.scrollHeight
+        const needsSpacer = contentHeight < containerHeight
 
-        console.log('🔍 [Marquee] Vertical - Container Height:', containerHeight)
-        console.log('🔍 [Marquee] Vertical - Content Height:', contentHeight)
-        console.log('🔍 [Marquee] Vertical - Difference:', containerHeight - contentHeight)
-        console.log('🔍 [Marquee] Vertical - Needs Spacer:', contentHeight < containerHeight)
+        if (needsSpacer) {
+          const spacerHeight = containerHeight - contentHeight
+          console.log('🔍 [Marquee] SPACER: Adding dummy item with height:', spacerHeight)
 
-        // If content doesn't fill container, calculate spacer height
-        if (contentHeight < containerHeight) {
-          const spacerHeight = containerHeight - contentHeight // NO BUFFER - exact size needed
-          console.log('🔍 [Marquee] Vertical - ADDING SPACER height:', spacerHeight)
-          console.log('🔍 [Marquee] Vertical - WHY? Content is SHORTER than container')
-
-          // Update existing dummy item size
           setIsUpdatingSpacer(true)
           setState(prev => {
-            console.log('🔍 [Marquee] Vertical - Updating dummy item size')
-            return {
-              ...prev,
-              marqueeItems: prev.marqueeItems.map(item =>
-                (item as any).isDummy ? { ...item, height: spacerHeight } : item
-              ),
+            // Check if dummy item already exists
+            const hasDummy = prev.marqueeItems.some(item => (item as any).isDummy)
+
+            if (!hasDummy) {
+              // Add dummy item at the correct position
+              const direction = props.direction || marqueeDefaults.direction
+              const newItems = [...prev.marqueeItems]
+              const dummyWithSize = {
+                isDummy: true,
+                width: 0,
+                height: spacerHeight,
+                id: Date.now() + Math.floor(Math.random() * 1000),
+              }
+
+              if (direction === MarqueeDirection.UP || direction === MarqueeDirection.LEFT) {
+                newItems.unshift(dummyWithSize as any) // BEGINNING for UP/LEFT
+              } else {
+                newItems.push(dummyWithSize as any) // END for DOWN/RIGHT
+              }
+
+              return { ...prev, marqueeItems: newItems }
+            } else {
+              // Update existing dummy item size
+              return {
+                ...prev,
+                marqueeItems: prev.marqueeItems.map(item =>
+                  (item as any).isDummy ? { ...item, height: spacerHeight } : item
+                ),
+              }
             }
           })
-          // Reset flag after state update with longer delay to prevent ResizeObserver conflicts
-          setTimeout(() => setIsUpdatingSpacer(false), 200)
+          setTimeout(() => setIsUpdatingSpacer(false), 100)
         } else {
-          console.log('🔍 [Marquee] Vertical - NO SPACER NEEDED - Content fills container')
-          console.log('🔍 [Marquee] Vertical - Setting dummy height to 0')
-
-          // Set dummy height to 0 when no spacer needed
+          console.log('🔍 [Marquee] SPACER: No spacer needed, removing dummy item')
           setIsUpdatingSpacer(true)
           setState(prev => ({
             ...prev,
-            marqueeItems: prev.marqueeItems.map(item => ((item as any).isDummy ? { ...item, height: 0 } : item)),
+            marqueeItems: prev.marqueeItems.filter(item => !(item as any).isDummy),
           }))
-          setTimeout(() => setIsUpdatingSpacer(false), 200)
+          setTimeout(() => setIsUpdatingSpacer(false), 100)
         }
       }
     }
 
-    console.log('🔍 [Marquee] Setting up ResizeObserver effect')
-    console.log('🔍 [Marquee] Current marqueeItems length:', marqueeItems.length)
-    console.log('🔍 [Marquee] Current direction:', props.direction)
+    // Calculate ONCE after render
+    const timer = setTimeout(calculateSpacerOnce, 100)
 
-    // Initial calculation - try immediately, then retry if needed
-    calculateSpacerSize()
-
-    // Set up ResizeObserver for dynamic updates
+    // Only recalculate if container size changes (not on every item change)
     const observer = new ResizeObserver(() => {
-      console.log('🔍 [Marquee] ResizeObserver triggered')
-      // Prevent infinite loops by checking if we're already updating
-      if (isUpdatingSpacer) {
-        console.log('🔍 [Marquee] Skipping ResizeObserver - already updating spacer')
-        return
-      }
-      // Calculate immediately on resize
-      calculateSpacerSize()
+      console.log('🔍 [Marquee] Container size changed, recalculating spacer')
+      calculateSpacerOnce()
     })
+
     observer.observe(container)
 
     return () => {
-      console.log('🔍 [Marquee] Cleaning up ResizeObserver')
+      clearTimeout(timer)
       observer.disconnect()
     }
-  }, [props.marqueeItems, props.direction])
+  }, [props.direction]) // Only depend on direction, not marqueeItems
 
   const { height, marqueeClassName, marqueeContainerClassName, marqueeItemClassName, minHeight } = props
 
@@ -319,23 +227,35 @@ export default function Marquee(props: IMarqueeProps) {
   }
 
   const getFirstMarqueeItemSize = () => {
-    const childNode = marqueeRef.current?.firstChild
-    if (childNode instanceof HTMLDivElement) {
-      if (isHorizontal) {
-        return childNode.offsetWidth
+    // Find the first NON-DUMMY item
+    const marqueeElement = marqueeRef.current
+    if (!marqueeElement) return 0
+
+    for (let i = 0; i < marqueeElement.children.length; i++) {
+      const child = marqueeElement.children[i] as HTMLDivElement
+      if (child && !child.classList.contains('marquee-dummy-item')) {
+        if (isHorizontal) {
+          return child.offsetWidth
+        }
+        return child.offsetHeight
       }
-      return childNode.offsetHeight
     }
     return 0
   }
 
   const getLastMarqueeItemSize = () => {
-    const childNode = marqueeRef.current?.lastChild
-    if (childNode instanceof HTMLDivElement) {
-      if (isHorizontal) {
-        return childNode.offsetWidth
+    // Find the last NON-DUMMY item
+    const marqueeElement = marqueeRef.current
+    if (!marqueeElement) return 0
+
+    for (let i = marqueeElement.children.length - 1; i >= 0; i--) {
+      const child = marqueeElement.children[i] as HTMLDivElement
+      if (child && !child.classList.contains('marquee-dummy-item')) {
+        if (isHorizontal) {
+          return child.offsetWidth
+        }
+        return child.offsetHeight
       }
-      return childNode.offsetHeight
     }
     return 0
   }
@@ -343,60 +263,76 @@ export default function Marquee(props: IMarqueeProps) {
   // Determine if marquee should be paused due to hover
   const shouldPause = paused || (pauseOnHover && isHovered) || (pauseOnItemHover && hoveredItemIndex !== null)
 
-  userInterval(
-    () => {
-      // Don't animate if paused or hovered
-      if (shouldPause) return
+  const animationFunction = useCallback(() => {
+    // Don't animate if paused or hovered
+    if (shouldPause) return
 
-      const nextMarqueeItems = [...marqueeItems]
-      let nextProp: 'top' | 'right' | 'bottom' | 'left'
-      switch (direction) {
-        case MarqueeDirection.UP:
-          nextProp = 'top'
-          break
-        case MarqueeDirection.RIGHT:
-          nextProp = 'right'
-          break
-        case MarqueeDirection.DOWN:
-          nextProp = 'bottom'
-          break
-        case MarqueeDirection.LEFT:
-          nextProp = 'left'
-          break
+    // Don't run animation if ResizeObserver is updating spacer
+    if (isUpdatingSpacer) return
 
-        default:
-          nextProp = 'top'
-          break
+    const nextMarqueeItems = [...marqueeItems]
+    let nextProp: 'top' | 'right' | 'bottom' | 'left'
+    switch (direction) {
+      case MarqueeDirection.UP:
+        nextProp = 'top'
+        break
+      case MarqueeDirection.RIGHT:
+        nextProp = 'right'
+        break
+      case MarqueeDirection.DOWN:
+        nextProp = 'bottom'
+        break
+      case MarqueeDirection.LEFT:
+        nextProp = 'left'
+        break
+
+      default:
+        nextProp = 'top'
+        break
+    }
+
+    let nextPropValue = state[nextProp]
+
+    // Next tick value - smaller steps for smooth scrolling
+    nextPropValue -= 0.5
+    const marqueeItemSize =
+      direction === MarqueeDirection.UP || direction === MarqueeDirection.LEFT
+        ? getFirstMarqueeItemSize()
+        : getLastMarqueeItemSize()
+
+    const marqueeItemPassed = (marqueeItemSize ? Math.floor(Math.abs(nextPropValue) / marqueeItemSize) : 0) > 0
+
+    // Handle recycling when item passes
+    if (marqueeItemPassed && !isRecycling) {
+      // PREVENT MULTIPLE RECYCLING CALLS
+      setIsRecycling(true)
+
+      if (direction === MarqueeDirection.UP || direction === MarqueeDirection.LEFT) {
+        nextMarqueeItems.push(nextMarqueeItems.shift() as any)
+      } else {
+        nextMarqueeItems.unshift(nextMarqueeItems.pop() as any)
       }
+      nextPropValue = nextPropValue + marqueeItemSize
 
-      let nextPropValue = state[nextProp]
+      // Reset recycling flag after state update
+      setTimeout(() => setIsRecycling(false), 50)
+    }
 
-      // Next tick value - smaller steps for smooth scrolling
-      nextPropValue -= 0.5
-      const marqueeItemSize =
-        direction === MarqueeDirection.UP || direction === MarqueeDirection.LEFT
-          ? getFirstMarqueeItemSize()
-          : getLastMarqueeItemSize()
-
-      const marqueeItemPassed = (marqueeItemSize ? Math.floor(Math.abs(nextPropValue) / marqueeItemSize) : 0) > 0
-
-      if (marqueeItemPassed) {
-        if (direction === MarqueeDirection.UP || direction === MarqueeDirection.LEFT) {
-          nextMarqueeItems.push(nextMarqueeItems.shift() as any)
-        } else {
-          nextMarqueeItems.unshift(nextMarqueeItems.pop() as any)
-        }
-        nextPropValue = nextPropValue + marqueeItemSize
-      }
-
-      setState(s => ({
+    setState(s => {
+      const newState = {
         ...s,
         [nextProp]: nextPropValue,
         marqueeItems: nextMarqueeItems,
-      }))
-    },
-    shouldPause ? null : delay
-  )
+      }
+
+      return newState
+    })
+
+    // Animation complete
+  })
+
+  // Use the stable callback with useInterval
+  useInterval(animationFunction, shouldPause ? null : delay)
 
   const marqueeItemElms = marqueeItems.map((marqueeItem, i) => {
     // Handle dummy items
@@ -408,7 +344,7 @@ export default function Marquee(props: IMarqueeProps) {
       return (
         <div
           className={`marquee-item marquee-dummy-item${marqueeItemClassName ? ` ${marqueeItemClassName}` : ''}`}
-          key={`dummy-${i}-${Date.now()}`}
+          key={`dummy-${i}`}
           style={{
             width: isHorizontal ? `${dummyWidth}px` : 'auto',
             height: isVertical ? `${dummyHeight}px` : 'auto',

@@ -1,4 +1,5 @@
 import React, { useState } from 'react'
+import { BasicMarquee, TestVerticalMarquee } from './index'
 
 interface MarqueeItem {
   id: number
@@ -6,20 +7,21 @@ interface MarqueeItem {
   color: number
 }
 
-interface ItemManagerProps {
-  items: MarqueeItem[]
-  onItemsChange: (items: MarqueeItem[]) => void
-}
-
 const initialItems: MarqueeItem[] = [
   { id: 1, text: '1. Welcome to React Marquee Master! 🎉', color: 1 },
   { id: 2, text: '2. This is a smooth scrolling text component', color: 2 },
   { id: 3, text: '3. Built with TypeScript and React', color: 3 },
-  { id: 4, text: '4. Perfect for announcements and news', color: 4 },
-  { id: 5, text: '5. Easy to customize and use', color: 1 },
+  // { id: 4, text: '4. Perfect for announcements and news', color: 4 },
+  // { id: 5, text: '5. Easy to customize and use', color: 1 },
 ]
 
-export const ItemManager: React.FC<ItemManagerProps> = ({ items, onItemsChange }) => {
+interface ItemManagerProps {
+  renderBasicMarquee: boolean
+  renderVerticalMarquee: boolean
+}
+
+export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, renderVerticalMarquee }) => {
+  const [items, setItems] = useState(initialItems)
   const [newItemText, setNewItemText] = useState('')
   const [newItemColor, setNewItemColor] = useState(1)
   const [editingItem, setEditingItem] = useState<number | null>(null)
@@ -32,7 +34,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ items, onItemsChange }
         text: newItemText.trim(),
         color: newItemColor,
       }
-      onItemsChange([...items, newItem])
+      setItems([...items, newItem])
       setNewItemText('')
       setNewItemColor(1)
     }
@@ -40,7 +42,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ items, onItemsChange }
 
   const handleRemoveItem = (id: number) => {
     if (items.length > 1) {
-      onItemsChange(items.filter(item => item.id !== id))
+      setItems(items.filter(item => item.id !== id))
     }
   }
 
@@ -54,7 +56,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ items, onItemsChange }
 
   const handleSaveEdit = (id: number) => {
     if (editText.trim()) {
-      onItemsChange(items.map(item => (item.id === id ? { ...item, text: editText.trim() } : item)))
+      setItems(items.map(item => (item.id === id ? { ...item, text: editText.trim() } : item)))
       setEditingItem(null)
       setEditText('')
     }
@@ -66,11 +68,11 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ items, onItemsChange }
   }
 
   const handleColorChange = (id: number, color: number) => {
-    onItemsChange(items.map(item => (item.id === id ? { ...item, color } : item)))
+    setItems(items.map(item => (item.id === id ? { ...item, color } : item)))
   }
 
   const handleResetToDefault = () => {
-    onItemsChange([...initialItems])
+    setItems([...initialItems])
   }
 
   return (
@@ -412,6 +414,23 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ items, onItemsChange }
       >
         <strong style={{ color: '#495057' }}>Total Items:</strong> {items.length} |{' '}
         <strong style={{ color: '#495057' }}>Colors Used:</strong> {new Set(items.map(item => item.color)).size} unique
+      </div>
+
+      {/* Marquee Components - Now rendered as children */}
+      <div style={{ marginTop: '40px' }}>
+        {renderBasicMarquee && (
+          <section className="marquee-section">
+            <h2>Basic Horizontal Marquee</h2>
+            <BasicMarquee items={items} />
+          </section>
+        )}
+
+        {renderVerticalMarquee && (
+          <section className="marquee-section">
+            <h2>Vertical Marquee</h2>
+            <TestVerticalMarquee items={items} />
+          </section>
+        )}
       </div>
     </div>
   )
