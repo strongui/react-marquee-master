@@ -14,6 +14,18 @@
       display: block;
       white-space: nowrap;
       box-sizing: border-box; // Include padding in width calculations
+
+      // Dummy item styling - completely invisible
+      &.marquee-dummy-item {
+        opacity: 0 !important;
+        pointer-events: none !important;
+        user-select: none;
+        visibility: hidden;
+        background: transparent !important;
+        border: none !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
     }
   }
 

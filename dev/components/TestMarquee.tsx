@@ -9,7 +9,10 @@ export function TestMarquee({ items }: TestMarqueeProps) {
   // Test case from the scenario:
   // Simple container with red border, 60px height
   // Marquee with single test item 'adfasfadfasdasdf'
-  const testItems = [{ id: 1, text: 'adfasfadfasdasdf', color: 1 }];
+  const testItems = [
+    { id: 1, text: 'adfasfadfasdasdf', color: 1 },
+    { id: 2, text: 'sfsdfasdsa asdf as', color: 2 },
+  ];
 
   return (
     <div className="demo-section">
@@ -26,9 +29,10 @@ export function TestMarquee({ items }: TestMarqueeProps) {
         }}
       >
         <Marquee
-          direction="left"
+          direction="right"
           height={60}
-          marqueeItems={['adfasfadfasdasdf']}
+          delay={5}
+          marqueeItems={['adfasfadfasdasdf', 'asfa faf asdf as']}
           marqueeContainerClassName="test-marquee-container"
         />
       </div>

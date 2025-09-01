@@ -38,10 +38,32 @@ const marqueeDefaults = {
 
 const initState = (props: IMarqueeProps) => {
   const marqueeItems = props.marqueeItems || marqueeDefaults.marqueeItems;
+
+  // Add dummy item to ensure scrolling is always visible
+  const dummyItem = {
+    text: '',
+    isDummy: true,
+    width: 0,
+  };
+
+  // For left scrolling, dummy goes at the end (after real items)
+  // For right scrolling, dummy goes at the beginning (before real items)
+  const direction = props.direction || marqueeDefaults.direction;
+  const isHorizontal = direction === 'left' || direction === 'right';
+
+  let itemsWithDummy = [...marqueeItems];
+  if (isHorizontal) {
+    if (direction === 'left') {
+      itemsWithDummy.push(dummyItem as any);
+    } else {
+      itemsWithDummy.unshift(dummyItem as any);
+    }
+  }
+
   return {
     bottom: 0,
     left: 0,
-    marqueeItems: props.inverseMarqueeItems ? marqueeItems.reverse() : marqueeItems,
+    marqueeItems: props.inverseMarqueeItems ? itemsWithDummy.reverse() : itemsWithDummy,
     right: 0,
     top: 0,
   };
@@ -180,7 +202,48 @@ export default function Marquee(props: IMarqueeProps) {
   );
 
   const marqueeItemElms = marqueeItems.map((marqueeItem, i) => {
-    // Handle different item types
+    // Handle dummy items
+    if (marqueeItem && typeof marqueeItem === 'object' && 'isDummy' in marqueeItem) {
+      // Calculate dummy width dynamically
+      let dummyWidth = 0;
+      if (marqueeContainerRef.current && marqueeRef.current) {
+        const containerWidth = marqueeContainerRef.current.offsetWidth;
+        let totalRealItemsWidth = 0;
+
+        // Calculate width of all real items (excluding this dummy)
+        marqueeItems.forEach((item, index) => {
+          if (index !== i && (!item || typeof item !== 'object' || !('isDummy' in item))) {
+            // This is a real item, estimate its width
+            if (typeof item === 'string') {
+              totalRealItemsWidth += item.length * 8 + 20; // Rough estimate + padding
+            } else if (React.isValidElement(item)) {
+              totalRealItemsWidth += 100 + 20; // Default width + padding
+            } else if (typeof item === 'object' && 'text' in item) {
+              totalRealItemsWidth += (item.text as string).length * 8 + 20;
+            }
+          }
+        });
+
+        // Calculate dummy width to ensure total width > container width
+        const extraWidth = Math.max(containerWidth * 0.1, 50); // At most 10% of container or 50px
+        dummyWidth = Math.max(0, containerWidth - totalRealItemsWidth + extraWidth);
+      }
+
+      return (
+        <div
+          className={`marquee-item marquee-dummy-item${marqueeItemClassName ? ` ${marqueeItemClassName}` : ''}`}
+          key="dummy-item"
+          style={{
+            width: `${dummyWidth}px`,
+            opacity: 0,
+            pointerEvents: 'none',
+            flexShrink: 0,
+          }}
+        />
+      );
+    }
+
+    // Handle different item types for real items
     let itemText: string | JSX.Element;
     let itemColor: number | undefined;
 
