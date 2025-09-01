@@ -1,7 +1,7 @@
 {
   "name": "react-marquee-master",
   "version": "1.4.5",
-  "description": "React component to allow you to create a vertically scrolling marquee",
+  "description": "React 18 component to create vertically and horizontally scrolling marquees with advanced features",
   "type": "module",
   "scripts": {
     "build:js": "rollup -c",
@@ -23,7 +23,9 @@
   "types": "dist/index.d.ts",
   "engines": {
     "node": ">=20.19.2",
-    "npm": ">=10"
+    "npm": ">=10",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "repository": {
     "type": "git",
@@ -38,9 +40,14 @@
   "files": [
     "dist"
   ],
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not op_mini all"
+  ],
   "peerDependencies": {
-    "react": ">=16.8.0",
-    "react-dom": ">=16.8.0"
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
@@ -66,7 +73,6 @@
     "css-loader": "^7.1.2",
     "eslint": "^9.34.0",
     "eslint-config-prettier": "^10.1.8",
-    "eslint-config-react-app": "^7.0.1",
     "eslint-plugin-import": "^2.32.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-prettier": "^5.5.4",

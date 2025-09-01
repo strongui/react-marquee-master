@@ -14,6 +14,17 @@ of the box.
 
 ## Demo
 
+🚀 **[Live Interactive Demo](https://strongui.github.io/react-marquee-master/)** - Try it out yourself!
+
+The live demo includes:
+- **Item Manager**: Add, edit, and remove items in real-time
+- **Basic Horizontal Marquee**: Standard scrolling demonstration
+- **Vertical Marquee**: Vertical scrolling showcase
+
+---
+
+### Static Examples
+
 Simple scroll:
 
 <!-- markdownlint-disable MD033 -->
@@ -164,6 +175,26 @@ Determines the color of the fade mask overlays:
 // Disable fade masks entirely
 <Marquee marqueeItems={items} applyFadeMask={false} />
 ```
+
+## Smart Spacer Management
+
+The marquee component automatically manages spacer items for optimal scrolling:
+
+### **Automatic Spacer Detection**
+
+- **Single item**: No spacer added (no scrolling needed)
+- **Multiple items**: Spacer automatically added for seamless looping
+- **No user configuration needed**: The component intelligently determines when spacers are required
+
+### **How It Works**
+
+The component analyzes your content and only adds spacers when they're actually needed for smooth, continuous scrolling. This ensures:
+- Clean appearance for single items
+- Seamless looping for multiple items
+- Optimal performance (no unnecessary DOM elements)
+- Zero configuration required from users
+
+---
 
 ## Hover Pause Features
 

@@ -1,12 +1,17 @@
-import React from 'react';
-import { render } from '@testing-library/react';
-import Marquee, { MarqueeDirection, FadeMaskColor } from '../Marquee';
+import React from 'react'
+import { render } from '@testing-library/react'
+import Marquee, { MarqueeDirection, FadeMaskColor } from '../Marquee'
 
 describe('Marquee Index Export', () => {
   it('exports Marquee as default', () => {
-    const { container } = render(<Marquee marqueeItems={['Test Item']} direction={MarqueeDirection.UP} />);
-    expect(container).toBeInTheDocument();
-  });
+    const { container } = render(
+      <Marquee
+        marqueeItems={['Test Item']}
+        direction={MarqueeDirection.UP}
+      />
+    )
+    expect(container).toBeInTheDocument()
+  })
 
   it('exports IMarqueeProps interface', () => {
     // This test ensures the interface is exported
@@ -28,7 +33,7 @@ describe('Marquee Index Export', () => {
         onMarqueeHover={() => {}}
         onMarqueeItemHover={() => {}}
       />
-    );
-    expect(container).toBeInTheDocument();
-  });
-});
+    )
+    expect(container).toBeInTheDocument()
+  })
+})

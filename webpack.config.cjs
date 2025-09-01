@@ -1,9 +1,10 @@
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+/* eslint-disable prettier/prettier */
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 module.exports = {
   mode: 'development',
-  entry: './dev/app.tsx',
+  entry: './dev/index.tsx',
   output: {
     path: path.resolve(__dirname, 'dev/dist'),
     filename: 'app.js',
@@ -57,4 +58,4 @@ module.exports = {
     }),
   ],
   devtool: 'inline-source-map',
-};
+}

@@ -1,10 +1,7 @@
 {
   "arrowParens": "avoid",
-  "importOrderParserPlugins": ["typescript", "jsx", "decorators-legacy"],
-  "importOrderTypeScriptVersion": "5.0.0",
   "bracketSameLine": false,
   "jsxSingleQuote": false,
-  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
   "printWidth": 120,
   "proseWrap": "always",
   "semi": false,
