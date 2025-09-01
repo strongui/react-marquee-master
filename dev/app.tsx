@@ -4,10 +4,10 @@ import './styles.css'
 
 const App: React.FC = () => {
   const [marqueeItems, setMarqueeItems] = useState([
-    { id: 1, text: 'Welcome to React Marquee!', color: 1 },
-    { id: 2, text: 'This is a powerful and flexible marquee component.', color: 2 },
-    { id: 3, text: 'You can customize it in many ways.', color: 3 },
-    { id: 4, text: 'Try different directions and speeds!', color: 4 },
+    { id: 1, text: '1. Welcome to React Marquee!', color: 1 },
+    { id: 2, text: '2. This is a powerful and flexible marquee component.', color: 2 },
+    { id: 3, text: '3. You can customize it in many ways.', color: 3 },
+    { id: 4, text: '4. Try different directions and speeds!', color: 4 },
   ])
 
   const renderBasicMarque = true
