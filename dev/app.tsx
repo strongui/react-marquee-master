@@ -1,6 +1,12 @@
 import React, { useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { BasicMarquee, HorizontalMarquee, ItemManager, TestMarquee } from './components';
+import {
+  BasicMarquee,
+  HorizontalMarquee,
+  ItemManager,
+  TestMarquee,
+  TestVerticalMarquee,
+} from './components';
 import './styles.css';
 
 interface MarqueeItem {
@@ -21,7 +27,7 @@ const initialItems: MarqueeItem[] = [
 ];
 
 // Configuration array - add the marquee types you want to test
-const activeMarquees: string[] = ['basic', 'horizontal', 'test'];
+const activeMarquees: string[] = ['basic', 'horizontal', 'test', 'test-vertical'];
 
 // Main App Component
 const App: React.FC = () => {
@@ -35,6 +41,8 @@ const App: React.FC = () => {
         return <HorizontalMarquee key={type} items={items} />;
       case 'test':
         return <TestMarquee key={type} items={items} />;
+      case 'test-vertical':
+        return <TestVerticalMarquee key={type} items={items} />;
       default:
         return null;
     }
@@ -45,7 +53,8 @@ const App: React.FC = () => {
       <h1>React Marquee Master - Live Development Demo</h1>
       <p>This is a live development environment to test the React Marquee component.</p>
       <p>
-        <strong>Active Marquees:</strong> Basic (vertical), Horizontal, and Test (smart scrolling)
+        <strong>Active Marquees:</strong> Basic (vertical), Horizontal, Test (smart scrolling), and
+        Test Vertical
       </p>
 
       {/* Item Manager - Controls all marquees */}

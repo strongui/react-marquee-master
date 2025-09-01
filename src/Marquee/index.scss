@@ -25,6 +25,8 @@
         border: none !important;
         margin: 0 !important;
         padding: 0 !important;
+        display: block !important;
+        flex-shrink: 0 !important;
       }
     }
   }

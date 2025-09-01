@@ -44,16 +44,20 @@ const initState = (props: IMarqueeProps) => {
     text: '',
     isDummy: true,
     width: 0,
+    height: 0,
   };
 
   // For left scrolling, dummy goes at the end (after real items)
   // For right scrolling, dummy goes at the beginning (before real items)
+  // For up scrolling, dummy goes at the end (after real items)
+  // For down scrolling, dummy goes at the beginning (before real items)
   const direction = props.direction || marqueeDefaults.direction;
   const isHorizontal = direction === 'left' || direction === 'right';
+  const isVertical = direction === 'up' || direction === 'down';
 
   let itemsWithDummy = [...marqueeItems];
-  if (isHorizontal) {
-    if (direction === 'left') {
+  if (isHorizontal || isVertical) {
+    if (direction === 'left' || direction === 'up') {
       itemsWithDummy.push(dummyItem as any);
     } else {
       itemsWithDummy.unshift(dummyItem as any);
@@ -90,6 +94,7 @@ export default function Marquee(props: IMarqueeProps) {
   const delay = props.delay || marqueeDefaults.delay;
   const direction = props.direction || marqueeDefaults.direction;
   const isHorizontal = direction === 'left' || direction === 'right';
+  const isVertical = direction === 'up' || direction === 'down';
   const paused = props.paused || false;
   const pauseOnHover = props.pauseOnHover || marqueeDefaults.pauseOnHover;
   const pauseOnItemHover = props.pauseOnItemHover || marqueeDefaults.pauseOnItemHover;
@@ -204,29 +209,43 @@ export default function Marquee(props: IMarqueeProps) {
   const marqueeItemElms = marqueeItems.map((marqueeItem, i) => {
     // Handle dummy items
     if (marqueeItem && typeof marqueeItem === 'object' && 'isDummy' in marqueeItem) {
-      // Calculate dummy width dynamically
+      // Calculate dummy dimensions dynamically
       let dummyWidth = 0;
+      let dummyHeight = 0;
+
       if (marqueeContainerRef.current && marqueeRef.current) {
         const containerWidth = marqueeContainerRef.current.offsetWidth;
+        const containerHeight = marqueeContainerRef.current.offsetHeight;
         let totalRealItemsWidth = 0;
+        let totalRealItemsHeight = 0;
 
-        // Calculate width of all real items (excluding this dummy)
+        // Calculate dimensions of all real items (excluding this dummy)
         marqueeItems.forEach((item, index) => {
           if (index !== i && (!item || typeof item !== 'object' || !('isDummy' in item))) {
-            // This is a real item, estimate its width
+            // This is a real item, estimate its dimensions
             if (typeof item === 'string') {
               totalRealItemsWidth += item.length * 8 + 20; // Rough estimate + padding
+              totalRealItemsHeight += 20 + 20; // Line height + padding
             } else if (React.isValidElement(item)) {
               totalRealItemsWidth += 100 + 20; // Default width + padding
+              totalRealItemsHeight += 20 + 20; // Default height + padding
             } else if (typeof item === 'object' && 'text' in item) {
               totalRealItemsWidth += (item.text as string).length * 8 + 20;
+              totalRealItemsHeight += 20 + 20;
             }
           }
         });
 
-        // Calculate dummy width to ensure total width > container width
-        const extraWidth = Math.max(containerWidth * 0.1, 50); // At most 10% of container or 50px
-        dummyWidth = Math.max(0, containerWidth - totalRealItemsWidth + extraWidth);
+        // Calculate dummy dimensions based on scroll direction
+        if (isHorizontal) {
+          // For horizontal scrolling, calculate width
+          const extraWidth = Math.max(containerWidth * 0.1, 50); // At most 10% of container or 50px
+          dummyWidth = Math.max(0, containerWidth - totalRealItemsWidth + extraWidth);
+        } else if (isVertical) {
+          // For vertical scrolling, calculate height
+          const extraHeight = Math.max(containerHeight * 0.1, 50); // At most 10% of container or 50px
+          dummyHeight = Math.max(0, containerHeight - totalRealItemsHeight + extraHeight);
+        }
       }
 
       return (
@@ -234,7 +253,8 @@ export default function Marquee(props: IMarqueeProps) {
           className={`marquee-item marquee-dummy-item${marqueeItemClassName ? ` ${marqueeItemClassName}` : ''}`}
           key="dummy-item"
           style={{
-            width: `${dummyWidth}px`,
+            width: isHorizontal ? `${dummyWidth}px` : 'auto',
+            height: isVertical ? `${dummyHeight}px` : 'auto',
             opacity: 0,
             pointerEvents: 'none',
             flexShrink: 0,
