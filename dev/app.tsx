@@ -14,7 +14,7 @@ const App: React.FC = () => {
         {/* Item Manager - Now the parent component that renders marquees */}
         <ItemManager
           renderBasicMarquee={true}
-          renderVerticalMarquee={false}
+          renderHorizontalMarquee={true}
         />
       </main>
     </div>

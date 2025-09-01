@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { BasicMarquee, TestVerticalMarquee } from './index'
+import { BasicMarquee, HorizontalMarquee } from './index'
 
 interface MarqueeItem {
   id: number
@@ -7,20 +7,194 @@ interface MarqueeItem {
   color: number
 }
 
+// Extracted styles to prevent re-renders
+const styles: Record<string, React.CSSProperties> = {
+  title: {
+    marginTop: '0',
+    marginBottom: '16px',
+    color: '#2c3e50',
+    fontSize: '20px',
+    fontWeight: '600',
+  },
+  description: {
+    color: '#6c757d',
+    marginBottom: '20px',
+    fontSize: '14px',
+    lineHeight: '1.5',
+  },
+  inputGroup: {
+    display: 'flex',
+    gap: '12px',
+    alignItems: 'center',
+    marginBottom: '20px',
+  },
+  input: {
+    flex: 1,
+    padding: '10px 12px',
+    borderRadius: '6px',
+    border: '1px solid #e1e5e9',
+    fontSize: '14px',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+  },
+  select: {
+    padding: '10px 12px',
+    borderRadius: '6px',
+    border: '1px solid #e1e5e9',
+    fontSize: '14px',
+    backgroundColor: 'white',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+  },
+  addButton: {
+    padding: '10px 20px',
+    backgroundColor: '#007bff',
+    color: 'white',
+    border: 'none',
+    borderRadius: '6px',
+    fontSize: '14px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 2px 4px rgba(0,123,255,0.3)',
+  },
+  resetButton: {
+    padding: '10px 16px',
+    backgroundColor: '#6c757d',
+    color: 'white',
+    border: 'none',
+    borderRadius: '6px',
+    fontSize: '14px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 2px 4px rgba(108,117,125,0.3)',
+  },
+  itemList: {
+    maxHeight: '250px',
+    overflowY: 'auto',
+    border: '1px solid #e9ecef',
+    borderRadius: '8px',
+    padding: '16px',
+    backgroundColor: '#f8f9fa',
+    boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)',
+  },
+  itemRow: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '12px',
+    padding: '12px',
+    borderBottom: '1px solid #f0f0f0',
+    borderRadius: '6px',
+    transition: 'all 0.2s ease',
+    marginBottom: '8px',
+  },
+  itemText: {
+    flex: 1,
+    fontWeight: '500',
+  },
+  editInput: {
+    flex: 1,
+    padding: '6px 10px',
+    borderRadius: '5px',
+    border: '1px solid #e1e5e9',
+    fontSize: '13px',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
+  },
+  saveButton: {
+    padding: '6px 12px',
+    backgroundColor: '#28a745',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    fontSize: '13px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 2px 4px rgba(40,167,69,0.3)',
+  },
+  cancelButton: {
+    padding: '6px 12px',
+    backgroundColor: '#6c757d',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    fontSize: '13px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 2px 4px rgba(108,117,125,0.3)',
+  },
+  editButton: {
+    padding: '6px 12px',
+    backgroundColor: '#007bff',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    fontSize: '13px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 2px 4px rgba(0,123,255,0.3)',
+  },
+  removeButton: {
+    padding: '6px 12px',
+    backgroundColor: '#dc3545',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    fontSize: '13px',
+    fontWeight: '500',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 2px 4px rgba(220,53,69,0.3)',
+  },
+  removeButtonDisabled: {
+    padding: '6px 12px',
+    backgroundColor: '#6c757d',
+    color: 'white',
+    border: 'none',
+    borderRadius: '5px',
+    fontSize: '13px',
+    fontWeight: '500',
+    cursor: 'not-allowed',
+    transition: 'all 0.2s ease',
+    boxShadow: '0 2px 4px rgba(108,117,125,0.3)',
+    opacity: 0.6,
+  },
+  summary: {
+    marginTop: '16px',
+    fontSize: '14px',
+    color: '#6c757d',
+    padding: '12px 16px',
+    backgroundColor: '#f8f9fa',
+    borderRadius: '6px',
+    border: '1px solid #e9ecef',
+  },
+  summaryStrong: {
+    color: '#495057',
+  },
+  marqueeContainer: {
+    marginTop: '40px',
+  },
+}
+
 const initialItems: MarqueeItem[] = [
   { id: 1, text: '1. Welcome to React Marquee Master! 🎉', color: 1 },
   { id: 2, text: '2. This is a smooth scrolling text component', color: 2 },
   { id: 3, text: '3. Built with TypeScript and React', color: 3 },
-  // { id: 4, text: '4. Perfect for announcements and news', color: 4 },
-  // { id: 5, text: '5. Easy to customize and use', color: 1 },
+  { id: 4, text: '4. Perfect for announcements and news', color: 4 },
+  { id: 5, text: '5. Easy to customize and use', color: 1 },
 ]
 
 interface ItemManagerProps {
   renderBasicMarquee: boolean
-  renderVerticalMarquee: boolean
+  renderHorizontalMarquee: boolean
 }
 
-export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, renderVerticalMarquee }) => {
+export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, renderHorizontalMarquee }) => {
   const [items, setItems] = useState(initialItems)
   const [newItemText, setNewItemText] = useState('')
   const [newItemColor, setNewItemColor] = useState(1)
@@ -76,45 +250,18 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
   }
 
   return (
-    <div className="demo-section">
-      <h3
-        style={{
-          marginTop: '0',
-          marginBottom: '16px',
-          color: '#2c3e50',
-          fontSize: '20px',
-          fontWeight: '600',
-        }}
-      >
-        🎯 Item Manager - Shared Across All Marquees
-      </h3>
-      <p
-        style={{
-          color: '#6c757d',
-          marginBottom: '20px',
-          fontSize: '14px',
-          lineHeight: '1.5',
-        }}
-      >
-        Add, edit, and manage items here. Changes will affect all marquees below.
-      </p>
+    <div className="item-manager-section">
+      <h3 style={styles.title}>🎯 Item Manager - Shared Across All Marquees</h3>
+      <p style={styles.description}>Add, edit, and manage items here. Changes will affect all marquees below.</p>
 
       <div className="controls">
-        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', marginBottom: '20px' }}>
+        <div style={styles.inputGroup}>
           <input
             type="text"
             value={newItemText}
             onChange={e => setNewItemText(e.target.value)}
             placeholder="Enter new item text..."
-            style={{
-              flex: 1,
-              padding: '10px 12px',
-              borderRadius: '6px',
-              border: '1px solid #e1e5e9',
-              fontSize: '14px',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            }}
+            style={styles.input}
             onFocus={e => {
               e.target.style.borderColor = '#007bff'
               e.target.style.boxShadow = '0 0 0 3px rgba(0,123,255,0.1)'
@@ -127,16 +274,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
           <select
             value={newItemColor}
             onChange={e => setNewItemColor(Number(e.target.value))}
-            style={{
-              padding: '10px 12px',
-              borderRadius: '6px',
-              border: '1px solid #e1e5e9',
-              fontSize: '14px',
-              backgroundColor: 'white',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-            }}
+            style={styles.select}
             onFocus={e => {
               e.target.style.borderColor = '#007bff'
               e.target.style.boxShadow = '0 0 0 3px rgba(0,123,255,0.1)'
@@ -155,16 +293,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
             onClick={handleAddItem}
             disabled={!newItemText.trim()}
             style={{
-              padding: '10px 20px',
-              backgroundColor: '#007bff',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              fontSize: '14px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 2px 4px rgba(0,123,255,0.3)',
+              ...styles.addButton,
               opacity: !newItemText.trim() ? 0.6 : 1,
             }}
             onMouseEnter={e => {
@@ -182,18 +311,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
           </button>
           <button
             onClick={handleResetToDefault}
-            style={{
-              padding: '10px 16px',
-              backgroundColor: '#6c757d',
-              color: 'white',
-              border: 'none',
-              borderRadius: '6px',
-              fontSize: '14px',
-              fontWeight: '500',
-              cursor: 'pointer',
-              transition: 'all 0.2s ease',
-              boxShadow: '0 2px 4px rgba(108,117,125,0.3)',
-            }}
+            style={styles.resetButton}
             onMouseEnter={e => {
               e.currentTarget.style.transform = 'translateY(-1px)'
               e.currentTarget.style.boxShadow = '0 4px 8px rgba(108,117,125,0.4)'
@@ -209,30 +327,13 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
       </div>
 
       {/* Item List */}
-      <div
-        style={{
-          maxHeight: '250px',
-          overflowY: 'auto',
-          border: '1px solid #e9ecef',
-          borderRadius: '8px',
-          padding: '16px',
-          backgroundColor: '#f8f9fa',
-          boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)',
-        }}
-      >
+      <div style={styles.itemList}>
         {items.map(item => (
           <div
             key={item.id}
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '12px',
-              padding: '12px',
-              borderBottom: '1px solid #f0f0f0',
+              ...styles.itemRow,
               backgroundColor: editingItem === item.id ? '#e9ecef' : 'transparent',
-              borderRadius: '6px',
-              transition: 'all 0.2s ease',
-              marginBottom: '8px',
             }}
           >
             {editingItem === item.id ? (
@@ -241,15 +342,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
                   type="text"
                   value={editText}
                   onChange={e => setEditText(e.target.value)}
-                  style={{
-                    flex: 1,
-                    padding: '6px 10px',
-                    borderRadius: '5px',
-                    border: '1px solid #e1e5e9',
-                    fontSize: '13px',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                  }}
+                  style={styles.editInput}
                   onFocus={e => {
                     e.target.style.borderColor = '#007bff'
                     e.target.style.boxShadow = '0 0 0 2px rgba(0,123,255,0.1)'
@@ -261,18 +354,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
                 />
                 <button
                   onClick={() => handleSaveEdit(item.id)}
-                  style={{
-                    padding: '6px 12px',
-                    backgroundColor: '#28a745',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    fontSize: '13px',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 2px 4px rgba(40,167,69,0.3)',
-                  }}
+                  style={styles.saveButton}
                   onMouseEnter={e => {
                     e.currentTarget.style.transform = 'translateY(-1px)'
                     e.currentTarget.style.boxShadow = '0 4px 8px rgba(40,167,69,0.4)'
@@ -286,18 +368,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
                 </button>
                 <button
                   onClick={handleCancelEdit}
-                  style={{
-                    padding: '6px 12px',
-                    backgroundColor: '#6c757d',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    fontSize: '13px',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 2px 4px rgba(108,117,125,0.3)',
-                  }}
+                  style={styles.cancelButton}
                   onMouseEnter={e => {
                     e.currentTarget.style.transform = 'translateY(-1px)'
                     e.currentTarget.style.boxShadow = '0 4px 8px rgba(108,117,125,0.4)'
@@ -312,7 +383,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
               </>
             ) : (
               <>
-                <span style={{ flex: 1, fontWeight: '500' }}>{item.text}</span>
+                <span style={styles.itemText}>{item.text}</span>
                 <select
                   value={item.color}
                   onChange={e => handleColorChange(item.id, Number(e.target.value))}
@@ -342,18 +413,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
                 </select>
                 <button
                   onClick={() => handleEditItem(item.id)}
-                  style={{
-                    padding: '6px 12px',
-                    backgroundColor: '#007bff',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    fontSize: '13px',
-                    fontWeight: '500',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 2px 4px rgba(0,123,255,0.3)',
-                  }}
+                  style={styles.editButton}
                   onMouseEnter={e => {
                     e.currentTarget.style.transform = 'translateY(-1px)'
                     e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,123,255,0.4)'
@@ -368,19 +428,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
                 <button
                   onClick={() => handleRemoveItem(item.id)}
                   disabled={items.length <= 1}
-                  style={{
-                    padding: '6px 12px',
-                    backgroundColor: items.length <= 1 ? '#6c757d' : '#dc3545',
-                    color: 'white',
-                    border: 'none',
-                    borderRadius: '5px',
-                    fontSize: '13px',
-                    fontWeight: '500',
-                    cursor: items.length <= 1 ? 'not-allowed' : 'pointer',
-                    transition: 'all 0.2s ease',
-                    boxShadow: items.length <= 1 ? '0 2px 4px rgba(108,117,125,0.3)' : '0 2px 4px rgba(220,53,69,0.3)',
-                    opacity: items.length <= 1 ? 0.6 : 1,
-                  }}
+                  style={items.length <= 1 ? styles.removeButtonDisabled : styles.removeButton}
                   onMouseEnter={e => {
                     if (items.length > 1) {
                       e.currentTarget.style.transform = 'translateY(-1px)'
@@ -401,34 +449,22 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
         ))}
       </div>
 
-      <div
-        style={{
-          marginTop: '16px',
-          fontSize: '14px',
-          color: '#6c757d',
-          padding: '12px 16px',
-          backgroundColor: '#f8f9fa',
-          borderRadius: '6px',
-          border: '1px solid #e9ecef',
-        }}
-      >
-        <strong style={{ color: '#495057' }}>Total Items:</strong> {items.length} |{' '}
-        <strong style={{ color: '#495057' }}>Colors Used:</strong> {new Set(items.map(item => item.color)).size} unique
+      <div style={styles.summary}>
+        <strong style={styles.summaryStrong}>Total Items:</strong> {items.length} |{' '}
+        <strong style={styles.summaryStrong}>Colors Used:</strong> {new Set(items.map(item => item.color)).size} unique
       </div>
 
       {/* Marquee Components - Now rendered as children */}
-      <div style={{ marginTop: '40px' }}>
+      <div style={styles.marqueeContainer}>
         {renderBasicMarquee && (
           <section className="marquee-section">
-            <h2>Basic Horizontal Marquee</h2>
             <BasicMarquee items={items} />
           </section>
         )}
 
-        {renderVerticalMarquee && (
+        {renderHorizontalMarquee && (
           <section className="marquee-section">
-            <h2>Vertical Marquee</h2>
-            <TestVerticalMarquee items={items} />
+            <HorizontalMarquee items={items} />
           </section>
         )}
       </div>

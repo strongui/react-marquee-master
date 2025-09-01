@@ -16,7 +16,7 @@ export const BasicMarquee: React.FC<BasicMarqueeProps> = ({ items }) => {
   const [state, setState] = useState({
     paused: false,
     direction: MarqueeDirection.UP,
-    speed: 10,
+    speed: 5,
     pauseOnHover: false,
     pauseOnItemHover: false,
     fadeMask: FadeMaskColor.WHITE,
@@ -53,7 +53,7 @@ export const BasicMarquee: React.FC<BasicMarqueeProps> = ({ items }) => {
   return (
     <>
       <ControlPanel
-        title="Basic Vertical Marquee"
+        title="Vertical Marquee"
         onPause={handlePause}
         onResume={handleResume}
         onDirectionChange={handleDirectionChange}
