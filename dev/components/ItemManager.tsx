@@ -116,11 +116,6 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderVerticalMarquee,
     setItemClickEnabled(enabled)
   }
 
-  const handleItemClick = (item: any, index: number) => {
-    const itemText = typeof item === 'object' && item !== null && 'text' in item ? item.text : 'Unknown item'
-    alert(`Item clicked: "${itemText}" (index: ${index})`)
-  }
-
   return (
     <div className="item-manager-section">
       <h3 className="item-manager-title">🎯 Item Manager - Shared Across All Marquees</h3>

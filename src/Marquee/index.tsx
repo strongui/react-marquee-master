@@ -548,6 +548,7 @@ export default function Marquee(props: IMarqueeProps) {
     const { itemText, itemColor, itemIcon } = parseMarqueeItem(marqueeItem)
 
     return (
+      // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions
       <div
         ref={el => registerItemRef(itemId, el)}
         className={`marquee-item${marqueeItemClassName ? ` ${marqueeItemClassName}` : ''}${onItemClick ? ' marquee-item--clickable' : ''}`}
