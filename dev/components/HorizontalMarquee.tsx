@@ -10,7 +10,7 @@ export const HorizontalMarquee: React.FC<HorizontalMarqueeProps> = ({ items }) =
   const [state, setState] = useState({
     paused: false,
     direction: MarqueeDirection.LEFT as MarqueeDirection,
-    speed: 10,
+    speed: 40,
     pauseOnHover: false,
     pauseOnItemHover: false,
     fadeMask: FadeMaskColor.WHITE as FadeMaskColor,

@@ -2,6 +2,10 @@ import React, { useState } from 'react'
 import { MarqueeItemObject } from '../../src/Marquee'
 import { BasicMarquee, HorizontalMarquee } from './index'
 
+// Helper function to generate unique IDs
+let idCounter = 1000
+const generateId = (): string => `item-${++idCounter}`
+
 // Extracted styles to prevent re-renders
 const styles: Record<string, React.CSSProperties> = {
   title: {
@@ -178,11 +182,11 @@ const styles: Record<string, React.CSSProperties> = {
 }
 
 const initialItems: MarqueeItemObject[] = [
-  { id: 1, text: '1. Welcome to React Marquee Master!', color: 1, icon: '🎉' },
-  // { id: 2, text: '2. This is a smooth scrolling text component', color: 2, icon: '📝' },
-  // { id: 3, text: '3. Built with TypeScript and React', color: 3, icon: '💻' },
-  // { id: 4, text: '4. Perfect for announcements and news', color: 4, icon: '📰' },
-  // { id: 5, text: '5. Easy to customize and use', color: 1, icon: '🔧' },
+  { id: generateId(), text: '1. Welcome to React Marquee Master!', color: 1, icon: '🎉' },
+  { id: generateId(), text: '2. This is a smooth scrolling text component', color: 2, icon: '📝' },
+  // { id: generateId(), text: '3. Built with TypeScript and React', color: 3, icon: '💻' },
+  // { id: generateId(), text: '4. Perfect for announcements and news', color: 4, icon: '📰' },
+  // { id: generateId(), text: '5. Easy to customize and use', color: 1, icon: '🔧' },
 ]
 
 interface ItemManagerProps {
@@ -194,13 +198,13 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
   const [items, setItems] = useState(initialItems)
   const [newItemText, setNewItemText] = useState('')
   const [newItemColor, setNewItemColor] = useState(1)
-  const [editingItem, setEditingItem] = useState<number | null>(null)
+  const [editingItem, setEditingItem] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
 
   const handleAddItem = () => {
     if (newItemText.trim()) {
       const newItem: MarqueeItemObject = {
-        id: Date.now(),
+        id: generateId(),
         text: newItemText.trim(),
         color: newItemColor,
       }
@@ -210,13 +214,13 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
     }
   }
 
-  const handleRemoveItem = (id: number) => {
+  const handleRemoveItem = (id: string) => {
     if (items.length > 1) {
       setItems(items.filter(item => item.id !== id))
     }
   }
 
-  const handleEditItem = (id: number) => {
+  const handleEditItem = (id: string) => {
     const item = items.find(item => item.id === id)
     if (item) {
       setEditingItem(id)
@@ -224,7 +228,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
     }
   }
 
-  const handleSaveEdit = (id: number) => {
+  const handleSaveEdit = (id: string) => {
     if (editText.trim()) {
       setItems(items.map(item => (item.id === id ? { ...item, text: editText.trim() } : item)))
       setEditingItem(null)
@@ -237,7 +241,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
     setEditText('')
   }
 
-  const handleColorChange = (id: number, color: number) => {
+  const handleColorChange = (id: string, color: number) => {
     setItems(items.map(item => (item.id === id ? { ...item, color } : item)))
   }
 
@@ -349,7 +353,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
                   }}
                 />
                 <button
-                  onClick={() => handleSaveEdit(item.id)}
+                  onClick={() => handleSaveEdit(item.id as string)}
                   style={styles.saveButton}
                   onMouseEnter={e => {
                     e.currentTarget.style.transform = 'translateY(-1px)'
@@ -382,7 +386,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
                 <span style={styles.itemText}>{item.text}</span>
                 <select
                   value={item.color}
-                  onChange={e => handleColorChange(item.id, Number(e.target.value))}
+                  onChange={e => handleColorChange(item.id as string, Number(e.target.value))}
                   style={{
                     padding: '6px 10px',
                     borderRadius: '5px',
@@ -408,7 +412,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
                   <option value={4}>Green-Cyan</option>
                 </select>
                 <button
-                  onClick={() => handleEditItem(item.id)}
+                  onClick={() => handleEditItem(item.id as string)}
                   style={styles.editButton}
                   onMouseEnter={e => {
                     e.currentTarget.style.transform = 'translateY(-1px)'
@@ -422,7 +426,7 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
                   ✏️ Edit
                 </button>
                 <button
-                  onClick={() => handleRemoveItem(item.id)}
+                  onClick={() => handleRemoveItem(item.id as string)}
                   disabled={items.length <= 1}
                   style={items.length <= 1 ? styles.removeButtonDisabled : styles.removeButton}
                   onMouseEnter={e => {

@@ -74,6 +74,12 @@ import Marquee from 'react-marquee-master';
 2 . Add your Marquee element
 
 ```jsx
+const marqueeItems = [
+  { id: 1, text: "Item 1" },
+  { id: 2, text: "Item 2" },
+  { id: 3, text: "Item 3" }
+];
+
 <Marquee marqueeItems={marqueeItems} />
 ```
 
@@ -83,9 +89,14 @@ import Marquee from 'react-marquee-master';
 
 ```jsx
 const [isPaused, setIsPaused] = useState(false);
+const marqueeItems = [
+  { id: 1, text: "Item 1" },
+  { id: 2, text: "Item 2" },
+  { id: 3, text: "Item 3" }
+];
 
 <Marquee
-  marqueeItems={['Item 1', 'Item 2', 'Item 3']}
+  marqueeItems={marqueeItems}
   paused={isPaused}
   onPause={() => console.log('Marquee paused')}
   onResume={() => console.log('Marquee resumed')}
@@ -99,8 +110,14 @@ const [isPaused, setIsPaused] = useState(false);
 **Hover pause functionality:**
 
 ```jsx
+const marqueeItems = [
+  { id: 1, text: "Item 1" },
+  { id: 2, text: "Item 2" },
+  { id: 3, text: "Item 3" }
+];
+
 <Marquee
-  marqueeItems={['Item 1', 'Item 2', 'Item 3']}
+  marqueeItems={marqueeItems}
   pauseOnHover={true}
   pauseOnItemHover={true}
   onMarqueeHover={() => console.log('Marquee area hovered')}
@@ -113,11 +130,44 @@ const [isPaused, setIsPaused] = useState(false);
 You can import `node_modules/react-marquee-master/dist/index.js` into your page. Please make sure
 that you have already imported `react` and `react-dom` into your page.
 
+## Item ID Requirements
+
+**IMPORTANT**: All marquee items must have a unique `id` property for optimal React performance and stable rendering during animations.
+
+### Supported Item Types
+
+```jsx
+// Text items
+const textItems = [
+  { id: 1, text: "Item 1" },
+  { id: 2, text: "Item 2" }
+];
+
+// JSX element items
+const jsxItems = [
+  { id: "item-1", content: <span>Custom JSX</span> },
+  { id: "item-2", content: <div>Another element</div> }
+];
+
+// Items with styling
+const styledItems = [
+  { id: 1, text: "Red item", color: 0xff0000 },
+  { id: 2, text: "Item with icon", icon: "⭐" }
+];
+```
+
+### Why IDs are Required
+
+- **Stable React Keys**: Ensures efficient DOM updates during animations
+- **Performance**: Prevents unnecessary re-renders when items are moved in the array
+- **Reliability**: Maintains component state during infinite scroll recycling
+- **Type Safety**: TypeScript enforces the ID requirement for better development experience
+
 ## Options
 
 Notes:
 
-- The `marqueeItems` property accepts an array of strings, JSX elements, or objects with `text`, `color`, and `id` properties.
+- The `marqueeItems` property accepts an array of objects with `id`, `text`/`content`, and optional `color`/`icon` properties.
 - You must define either a `height` or `minHeight` for the marquee, because the marquee elements are absolutely positioned and will not grow the marquee container on their own.
 - All other props are optional, and are there to allow you to customize the marquee to your liking.
 - The component comes without any styles or style sheets. It's up to you to style the marquee any way you want. All this component will do is handle the animations for you.
@@ -131,7 +181,7 @@ Notes:
 | marqueeClassName          | string                     |                       |         | Class to apply to marquee element.                             |
 | marqueeContainerClassName | string                     |                       |         | Class to apply to marquee container element.                   |
 | marqueeItemClassName      | string                     |                       |         | Class to apply to each marquee element.                        |
-| marqueeItems              | Array<string\|JSX.Element\|{text: string, color?: number, id?: number}> | []                    | []      | The text / Components / Objects to display.                    |
+| marqueeItems              | Array<{id: string\|number, text?: string, content?: string\|JSX.Element, color?: number, icon?: string}> | []                    | []      | The items to display. Each item must have a unique `id`. Use `text` for strings or `content` for JSX elements. |
 | minHeight                 | number                     | 0-99999               |         | More dynamic sizing option with a minimum size that will grow. |
 | paused                    | boolean                    | true, false           | false   | Pause or resume the marquee animation.                         |
 | pauseOnHover             | boolean                    | true, false           | false   | Pause marquee when hovering over the marquee container area.   |

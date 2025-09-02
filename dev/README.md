@@ -11,11 +11,13 @@ This is the interactive demo for the React Marquee component. It showcases the c
 ## Running Locally
 
 1. Install dependencies:
+
    ```bash
    npm install
    ```
 
 2. Start the development server:
+
    ```bash
    npm run dev
    ```
@@ -39,6 +41,7 @@ This demo is automatically deployed to GitHub Pages via GitHub Actions. The live
 ## Customization
 
 You can modify the demo by:
+
 - Adding new marquee components in the `components/` directory
 - Updating the `app.tsx` to include new examples
-- Modifying the styling in `styles.css`
+- Modifying the styling in `styles.css
