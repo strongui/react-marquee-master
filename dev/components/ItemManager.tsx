@@ -183,7 +183,7 @@ const styles: Record<string, React.CSSProperties> = {
 
 const initialItems: MarqueeItemObject[] = [
   { id: generateId(), text: '1. Welcome to React Marquee Master!', color: 1, icon: '🎉' },
-  { id: generateId(), text: '2. This is a smooth scrolling text component', color: 2, icon: '📝' },
+  // { id: generateId(), text: '2. This is a smooth scrolling text component', color: 2, icon: '📝' },
   // { id: generateId(), text: '3. Built with TypeScript and React', color: 3, icon: '💻' },
   // { id: generateId(), text: '4. Perfect for announcements and news', color: 4, icon: '📰' },
   // { id: generateId(), text: '5. Easy to customize and use', color: 1, icon: '🔧' },

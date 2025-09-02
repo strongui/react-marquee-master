@@ -75,9 +75,16 @@ const marqueeDefaults = {
 
 const initState = (props: IMarqueeProps) => {
   const marqueeItems = props.marqueeItems || marqueeDefaults.marqueeItems
+  const direction = props.direction || marqueeDefaults.direction
 
   // Always add a dummy item for seamless infinite scroll
-  const itemsWithDummy = [...marqueeItems, { isDummy: true, id: 'dummy-spacer', width: 0, height: 0 }]
+  // For RIGHT/DOWN: dummy goes at the beginning (items get moved to end)
+  // For LEFT/UP: dummy goes at the end (items get moved to beginning)
+  const dummyItem = { isDummy: true, id: 'dummy-spacer', width: 0, height: 0 }
+  const itemsWithDummy =
+    direction === MarqueeDirection.RIGHT || direction === MarqueeDirection.DOWN
+      ? [dummyItem, ...marqueeItems]
+      : [...marqueeItems, dummyItem]
 
   return {
     bottom: 0,
@@ -90,13 +97,30 @@ const initState = (props: IMarqueeProps) => {
 
 export default function Marquee(props: IMarqueeProps) {
   /* Props */
-  const { height, marqueeClassName, marqueeContainerClassName, marqueeItemClassName, minHeight } = props
+  const {
+    height,
+    marqueeClassName: marqueeClassNameProp,
+    marqueeContainerClassName,
+    marqueeItemClassName,
+    minHeight,
+  } = props
 
   /* Vars */
   // Get direction early for memoization
   const direction = props.direction || marqueeDefaults.direction
   const isHorizontal = direction === MarqueeDirection.LEFT || direction === MarqueeDirection.RIGHT
   const isVertical = direction === MarqueeDirection.UP || direction === MarqueeDirection.DOWN
+
+  // Compute marquee className with direction-specific class
+  const marqueeClassName = `marquee ${
+    direction === MarqueeDirection.LEFT
+      ? 'left-scroll'
+      : direction === MarqueeDirection.RIGHT
+        ? 'right-scroll'
+        : direction === MarqueeDirection.UP
+          ? 'top-scroll'
+          : 'bottom-scroll'
+  }${marqueeClassNameProp ? ` ${marqueeClassNameProp}` : ''}`
 
   const delay = props.delay || marqueeDefaults.delay
   const paused = props.paused || false
@@ -442,8 +466,8 @@ export default function Marquee(props: IMarqueeProps) {
       )
     } else if (direction === MarqueeDirection.RIGHT) {
       // Item started off-screen left, check if it's now completely off-screen right
-      const threshold = containerSize + marqueeItemSize
-      marqueeItemPassed = nextPropValue >= threshold
+      const threshold = 0 - marqueeItemSize
+      marqueeItemPassed = nextPropValue <= threshold
       console.log(
         '🔍 [Animation] RIGHT: threshold =',
         threshold,
@@ -614,7 +638,7 @@ export default function Marquee(props: IMarqueeProps) {
         }}
       >
         <div
-          className={`marquee${isHorizontal ? ` left-scroll` : ` top-scroll`}${marqueeClassName ? ` ${marqueeClassName}` : ''}`}
+          className={marqueeClassName}
           ref={marqueeRef}
           style={marqueeStyle}
         >
