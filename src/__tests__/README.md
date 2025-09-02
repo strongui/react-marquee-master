@@ -5,6 +5,7 @@ This directory contains comprehensive tests for the React Marquee component.
 ## Test Structure
 
 ### 1. **Marquee.test.tsx** - Component Unit Tests
+
 - **Basic Rendering**: Tests component rendering with various props
 - **Direction Props**: Tests different scroll directions (up, down, left, right, both)
 - **Styling Props**: Tests height, minHeight, and className applications
@@ -15,6 +16,7 @@ This directory contains comprehensive tests for the React Marquee component.
 - **Accessibility**: Basic accessibility checks
 
 ### 2. **useInterval.test.ts** - Hook Unit Tests
+
 - **Interval Execution**: Tests callback execution at specified intervals
 - **Null Delay Handling**: Tests pausing when delay is null
 - **Callback Updates**: Tests that latest callback is used
@@ -23,12 +25,14 @@ This directory contains comprehensive tests for the React Marquee component.
 - **Pause/Resume**: Tests pausing and resuming intervals
 
 ### 3. **integration.test.tsx** - Integration Tests
+
 - **Pause/Resume Integration**: Tests pause/resume with user interactions
 - **Direction Changes**: Tests dynamic direction changes
 - **Dynamic Content**: Tests adding/removing items dynamically
 - **Complex Configuration**: Tests multiple prop changes together
 
 ### 4. **index.test.tsx** - Export Tests
+
 - **Component Export**: Tests that component exports correctly
 - **Interface Export**: Tests that TypeScript interfaces export correctly
 
@@ -48,6 +52,7 @@ npm run test:coverage
 ## Test Coverage
 
 The test suite achieves approximately **82% code coverage** with:
+
 - **82.5%** statement coverage
 - **74.19%** branch coverage
 - **100%** function coverage
