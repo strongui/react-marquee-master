@@ -25,7 +25,11 @@ describe('Marquee Integration Tests', () => {
       it(`renders correctly with ${direction} direction`, () => {
         render(
           <Marquee
-            marqueeItems={['Item 1', 'Item 2', 'Item 3']}
+            marqueeItems={[
+              { id: 1, text: 'Item 1' },
+              { id: 2, text: 'Item 2' },
+              { id: 3, text: 'Item 3' }
+            ]}
             direction={direction}
           />
         )
@@ -45,7 +49,10 @@ describe('Marquee Integration Tests', () => {
       // Test paused state
       const { rerender } = render(
         <Marquee
-          marqueeItems={['Item 1', 'Item 2']}
+          marqueeItems={[
+            { id: 1, text: 'Item 1' },
+            { id: 2, text: 'Item 2' }
+          ]}
           paused={true}
           onPause={onPause}
           onResume={onResume}
@@ -58,7 +65,10 @@ describe('Marquee Integration Tests', () => {
       // Test non-paused state
       rerender(
         <Marquee
-          marqueeItems={['Item 1', 'Item 2']}
+          marqueeItems={[
+            { id: 1, text: 'Item 1' },
+            { id: 2, text: 'Item 2' }
+          ]}
           paused={false}
           onPause={onPause}
           onResume={onResume}
@@ -74,7 +84,10 @@ describe('Marquee Integration Tests', () => {
 
       render(
         <Marquee
-          marqueeItems={['Item 1', 'Item 2']}
+          marqueeItems={[
+            { id: 1, text: 'Item 1' },
+            { id: 2, text: 'Item 2' }
+          ]}
           pauseOnHover={true}
           onMarqueeHover={onMarqueeHover}
         />
@@ -94,7 +107,10 @@ describe('Marquee Integration Tests', () => {
 
       render(
         <Marquee
-          marqueeItems={['Item 1', 'Item 2']}
+          marqueeItems={[
+            { id: 1, text: 'Item 1' },
+            { id: 2, text: 'Item 2' }
+          ]}
           pauseOnItemHover={true}
           onMarqueeItemHover={onMarqueeItemHover}
         />
@@ -112,7 +128,7 @@ describe('Marquee Integration Tests', () => {
     it('integrates custom className props', () => {
       render(
         <Marquee
-          marqueeItems={['Item 1']}
+          marqueeItems={[{ id: 1, text: 'Item 1' }]}
           marqueeClassName="custom-marquee"
           marqueeContainerClassName="custom-container"
           marqueeItemClassName="custom-item"
@@ -131,7 +147,7 @@ describe('Marquee Integration Tests', () => {
     it('integrates height prop', () => {
       render(
         <Marquee
-          marqueeItems={['Item 1']}
+          marqueeItems={[{ id: 1, text: 'Item 1' }]}
           height={200}
         />
       )
@@ -142,7 +158,7 @@ describe('Marquee Integration Tests', () => {
     it('integrates minHeight prop when no height is provided', () => {
       render(
         <Marquee
-          marqueeItems={['Item 1']}
+          marqueeItems={[{ id: 1, text: 'Item 1' }]}
           minHeight={150}
         />
       )
@@ -153,7 +169,7 @@ describe('Marquee Integration Tests', () => {
     it('integrates fade mask functionality', () => {
       render(
         <Marquee
-          marqueeItems={['Item 1']}
+          marqueeItems={[{ id: 1, text: 'Item 1' }]}
           applyFadeMask={true}
           fadeMaskColor={FadeMaskColor.BLACK}
         />
@@ -166,7 +182,10 @@ describe('Marquee Integration Tests', () => {
 
   describe('Item Types Integration', () => {
     it('integrates string items', () => {
-      render(<Marquee marqueeItems={['String Item 1', 'String Item 2']} />)
+      render(<Marquee marqueeItems={[
+        { id: 1, text: 'String Item 1' },
+        { id: 2, text: 'String Item 2' }
+      ]} />)
 
       expect(screen.getByText('String Item 1')).toBeInTheDocument()
       expect(screen.getByText('String Item 2')).toBeInTheDocument()
@@ -175,7 +194,7 @@ describe('Marquee Integration Tests', () => {
     it('integrates JSX element items', () => {
       const jsxItems = [<span key="1">JSX Item 1</span>, <div key="2">JSX Item 2</div>]
 
-      render(<Marquee marqueeItems={jsxItems} />)
+      render(<Marquee marqueeItems={jsxItems.map((item, index) => ({ id: index, content: item }))} />)
 
       expect(screen.getByText('JSX Item 1')).toBeInTheDocument()
       expect(screen.getByText('JSX Item 2')).toBeInTheDocument()
@@ -187,7 +206,7 @@ describe('Marquee Integration Tests', () => {
         { text: 'Object Item 2', color: 2 },
       ]
 
-      render(<Marquee marqueeItems={objectItems} />)
+      render(<Marquee marqueeItems={objectItems.map((item, index) => ({ ...item, id: index }))} />)
 
       expect(screen.getByText('Object Item 1')).toBeInTheDocument()
       expect(screen.getByText('Object Item 2')).toBeInTheDocument()
@@ -197,7 +216,10 @@ describe('Marquee Integration Tests', () => {
   describe('Configuration Integration', () => {
     it('integrates all configuration options together', () => {
       const config = {
-        marqueeItems: ['Config Item 1', 'Config Item 2'],
+        marqueeItems: [
+          { id: 1, text: 'Config Item 1' },
+          { id: 2, text: 'Config Item 2' }
+        ],
         direction: MarqueeDirection.LEFT,
         height: 100,
         delay: 50,
@@ -234,7 +256,10 @@ describe('Marquee Integration Tests', () => {
       directions.forEach(direction => {
         const { unmount } = render(
           <Marquee
-            marqueeItems={['Item 1', 'Item 2']}
+            marqueeItems={[
+            { id: 1, text: 'Item 1' },
+            { id: 2, text: 'Item 2' }
+          ]}
             direction={direction}
           />
         )
@@ -254,7 +279,7 @@ describe('Marquee Integration Tests', () => {
       // Test UP direction (dummy at end)
       const { rerender } = render(
         <Marquee
-          marqueeItems={['Real Item']}
+          marqueeItems={[{ id: 1, text: 'Real Item' }]}
           direction={MarqueeDirection.UP}
         />
       )
@@ -268,7 +293,7 @@ describe('Marquee Integration Tests', () => {
       // Test DOWN direction (dummy at beginning)
       rerender(
         <Marquee
-          marqueeItems={['Real Item']}
+          marqueeItems={[{ id: 1, text: 'Real Item' }]}
           direction={MarqueeDirection.DOWN}
         />
       )
@@ -294,7 +319,7 @@ describe('Marquee Integration Tests', () => {
       expect(() => {
         render(
           <Marquee
-            marqueeItems={['Test Item']}
+            marqueeItems={[{ id: 1, text: 'Test Item' }]}
             pauseOnHover={true}
             pauseOnItemHover={true}
             {...callbacks}

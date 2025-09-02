@@ -4,7 +4,11 @@ import { screen } from '@testing-library/dom'
 import Marquee, { MarqueeDirection, FadeMaskColor } from '../Marquee'
 
 const defaultProps = {
-  marqueeItems: ['Item 1', 'Item 2', 'Item 3'],
+  marqueeItems: [
+    { id: 1, text: 'Item 1' },
+    { id: 2, text: 'Item 2' },
+    { id: 3, text: 'Item 3' }
+  ],
   height: 100,
 }
 
@@ -154,7 +158,7 @@ describe('Marquee Component', () => {
     render(
       <Marquee
         {...defaultProps}
-        marqueeItems={jsxItems}
+        marqueeItems={jsxItems.map((item, index) => ({ id: index, content: item }))}
       />
     )
     expect(screen.getByText('JSX Item 1')).toBeInTheDocument()
@@ -163,8 +167,8 @@ describe('Marquee Component', () => {
 
   it('handles object items with text property', () => {
     const objectItems = [
-      { text: 'Object Item 1', color: 1 },
-      { text: 'Object Item 2', color: 2 },
+      { id: 1, text: 'Object Item 1', color: 1 },
+      { id: 2, text: 'Object Item 2', color: 2 },
     ]
     render(
       <Marquee
@@ -251,7 +255,11 @@ describe('Marquee Component', () => {
   })
 
   it('handles mixed item types in the same marquee', () => {
-    const mixedItems = ['String Item', <span key="jsx">JSX Item</span>, { text: 'Object Item', color: 5 }]
+    const mixedItems = [
+      { id: 1, text: 'String Item' },
+      { id: 2, content: <span key="jsx">JSX Item</span> },
+      { id: 3, text: 'Object Item', color: 5 }
+    ]
     render(
       <Marquee
         {...defaultProps}
@@ -265,7 +273,10 @@ describe('Marquee Component', () => {
   })
 
   it('applies data-color attribute to items with color property', () => {
-    const itemsWithColor = [{ text: 'Colored Item', color: 42 }, 'Regular Item']
+    const itemsWithColor = [
+      { id: 1, text: 'Colored Item', color: 42 },
+      { id: 2, text: 'Regular Item' }
+    ]
     render(
       <Marquee
         {...defaultProps}

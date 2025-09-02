@@ -6,7 +6,7 @@ describe('Marquee Index Export', () => {
   it('exports Marquee as default', () => {
     const { container } = render(
       <Marquee
-        marqueeItems={['Test Item']}
+        marqueeItems={[{ id: 1, text: 'Test Item' }]}
         direction={MarqueeDirection.UP}
       />
     )
@@ -19,7 +19,7 @@ describe('Marquee Index Export', () => {
     // the component accepts the props defined in the interface
     const { container } = render(
       <Marquee
-        marqueeItems={['Test Item']}
+        marqueeItems={[{ id: 1, text: 'Test Item' }]}
         direction={MarqueeDirection.UP}
         height={100}
         delay={50}
