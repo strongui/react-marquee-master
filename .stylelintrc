@@ -1,51 +1,26 @@
 {
-  "extends": [
-    "stylelint-config-standard",
-    "stylelint-config-prettier"
-  ],
+  "extends": ["stylelint-config-standard"],
   "syntax": "scss",
-  "plugins": [
-    "stylelint-scss"
-  ],
+  "plugins": ["stylelint-scss"],
   "rules": {
     "at-rule-empty-line-before": [
       "always",
       {
-        "except": [
-          "blockless-after-same-name-blockless",
-          "first-nested"
-        ],
-        "ignore": [
-          "after-comment"
-        ]
+        "except": ["blockless-after-same-name-blockless", "first-nested"],
+        "ignore": ["after-comment"]
       }
     ],
     "at-rule-no-unknown": [
       true,
       {
-        "ignoreAtRules": [
-          "content",
-          "each",
-          "else",
-          "extend",
-          "function",
-          "if",
-          "error",
-          "include",
-          "mixin",
-          "return"
-        ]
+        "ignoreAtRules": ["content", "each", "else", "extend", "function", "if", "error", "include", "mixin", "return"]
       }
     ],
     "rule-empty-line-before": [
       "always-multi-line",
       {
-        "except": [
-          "first-nested"
-        ],
-        "ignore": [
-          "after-comment"
-        ]
+        "except": ["first-nested"],
+        "ignore": ["after-comment"]
       }
     ]
   }
