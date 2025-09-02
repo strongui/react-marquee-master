@@ -1,8 +1,9 @@
 import * as React from 'react'
 import useInterval from '../helpers/hookHelpers/useInterval'
+import useWindowResize from './hooks/useWindowResize'
 import './index.scss'
 
-const { useRef, useState, useEffect, useCallback, useLayoutEffect } = React
+const { useRef, useState, useEffect, useCallback, useLayoutEffect, useMemo } = React
 
 // Enums for better type safety and developer experience
 export enum MarqueeDirection {
@@ -213,23 +214,13 @@ export default function Marquee(props: IMarqueeProps) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.marqueeItems, props.inverseMarqueeItems])
 
-  // ONLY handle container size changes - spacer logic moved to useLayoutEffect
-  useEffect(() => {
-    if (!marqueeContainerRef.current) return
-
-    const container = marqueeContainerRef.current
-
-    // Only recalculate if container size changes (not on every item change)
-    const observer = new ResizeObserver(() => {
-      // The useLayoutEffect will handle the spacer calculation
-    })
-
-    observer.observe(container)
-
-    return () => {
-      observer.disconnect()
-    }
+  // Handle window resize to recalculate container size and dummy items
+  const handleWindowResize = useCallback(() => {
+    setContainerIsReady(false)
+    setDummyItemSize({ width: 0, height: 0 })
   }, [])
+
+  useWindowResize(handleWindowResize, 100)
 
   const getFirstMarqueeItemSize = useCallback(
     (skipDummy = false) => {
@@ -400,35 +391,35 @@ export default function Marquee(props: IMarqueeProps) {
     setDummyItemSize(dummySize)
   }, [direction, isHorizontal, containerIsReady, getFirstMarqueeItemSize, getLastMarqueeItemSize])
 
-  const marqueeContainerStyle: React.CSSProperties = {}
-  if (height) {
-    marqueeContainerStyle.height = `${height}px`
-  } else if (minHeight) {
-    marqueeContainerStyle.minHeight = `${minHeight}px`
-  } else {
-    marqueeContainerStyle.minHeight = `${marqueeDefaults.minHeight}px`
-  }
+  const marqueeContainerStyle: React.CSSProperties = useMemo(() => {
+    const style: React.CSSProperties = {}
+    if (height) {
+      style.height = `${height}px`
+    } else if (minHeight) {
+      style.minHeight = `${minHeight}px`
+    } else {
+      style.minHeight = `${marqueeDefaults.minHeight}px`
+    }
+    return style
+  }, [height, minHeight])
 
-  const marqueeStyle: React.CSSProperties = {}
-  if (direction === MarqueeDirection.UP) {
-    marqueeStyle.top = `${top}px`
-  } else if (direction === MarqueeDirection.RIGHT) {
-    marqueeStyle.right = `${right}px`
-  } else if (direction === MarqueeDirection.DOWN) {
-    marqueeStyle.bottom = `${bottom}px`
-  } else if (direction === MarqueeDirection.LEFT) {
-    marqueeStyle.left = `${left}px`
-  }
+  const marqueeStyle: React.CSSProperties = useMemo(() => {
+    const style: React.CSSProperties = {}
+    if (direction === MarqueeDirection.UP) {
+      style.top = `${top}px`
+    } else if (direction === MarqueeDirection.RIGHT) {
+      style.right = `${right}px`
+    } else if (direction === MarqueeDirection.DOWN) {
+      style.bottom = `${bottom}px`
+    } else if (direction === MarqueeDirection.LEFT) {
+      style.left = `${left}px`
+    }
 
-  if (containerIsReady) {
-    // if (isHorizontal) {
-    //   marqueeStyle.width = `${marqueeState.width}px`
-    // } else {
-    //   marqueeStyle.height = `${marqueeState.height}px`
-    // }
-  } else {
-    marqueeStyle.opacity = 0
-  }
+    if (!containerIsReady) {
+      style.opacity = 0
+    }
+    return style
+  }, [direction, top, right, bottom, left, containerIsReady])
 
   // Determine if marquee should be paused due to hover
   const shouldPause = paused || (pauseOnHover && isHovered) || (pauseOnItemHover && hoveredItemIndex !== null)

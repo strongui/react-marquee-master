@@ -12,12 +12,9 @@ export default function useInterval(callback: () => void, delay: number | null) 
 
   // Set up the interval.
   useEffect(() => {
-    console.log('🔄 [useInterval] Setting up interval:', { delay, hasCallback: !!callback })
-
     // Don't schedule if no delay is specified.
     // Note: 0 is a valid value for delay.
     if (delay === null) {
-      console.log('🔄 [useInterval] No delay specified, skipping interval')
       return
     }
 
@@ -25,11 +22,8 @@ export default function useInterval(callback: () => void, delay: number | null) 
       savedCallback.current()
     }, delay)
 
-    console.log('🔄 [useInterval] New interval created:', id)
-
     return () => {
       window.clearInterval(id)
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [delay])
 }
