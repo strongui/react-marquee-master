@@ -1,6 +1,6 @@
 {
   "name": "react-marquee-master",
-  "version": "1.4.5",
+  "version": "2.0.0",
   "description": "React 18 component to create vertically and horizontally scrolling marquees with advanced features",
   "type": "module",
   "scripts": {
@@ -12,6 +12,9 @@
     "start": "rollup -c -w",
     "dev": "webpack serve --config webpack.config.cjs",
     "dev:build": "webpack --config webpack.config.cjs",
+    "build:demo": "webpack --config webpack.config.cjs --mode production",
+    "predeploy": "npm run build:demo",
+    "deploy": "gh-pages -d dev/dist",
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
@@ -78,6 +81,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.35.0",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "gh-pages": "^6.3.0",
     "globals": "^16.3.0",
     "html-webpack-plugin": "^5.6.0",
     "identity-obj-proxy": "^3.0.0",

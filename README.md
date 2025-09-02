@@ -4,6 +4,25 @@ Simple component to create a scrolling marquee. The marquee HTML tag has been di
 sometimes you just have to add some flare to your site! Build with typescript to provide typings out
 of the box.
 
+## 🎉 What's New in v2.0
+
+### ✨ Major Features
+
+- **🖱️ Item Click Support**: Add `onItemClick` prop to handle item interactions
+- **🎨 Icon Support**: Display icons alongside text in marquee items
+- **⏸️ Enhanced Hover Controls**: Pause on hover with `pauseOnHover` and `pauseOnItemHover`
+- **🐛 Critical Bug Fixes**: Fixed infinite scroll issues when items are shorter than container width
+
+### 🛡️ Developer Experience
+
+- **Better TypeScript**: Enhanced type safety with proper interfaces and enums
+- **Performance**: Optimized React rendering and DOM access
+- **Documentation**: Comprehensive examples and prop documentation
+
+## 📋 [Changelog](CHANGELOG.md)
+
+See [CHANGELOG.md](CHANGELOG.md) for a complete list of changes, new features, and breaking changes.
+
 [![Version](http://img.shields.io/npm/v/react-marquee-master.svg)](https://www.npmjs.org/package/react-marquee-master)
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg?style=flat)](https://github.com/feross/standard)
 [![npm download][download-image]][download-url]
