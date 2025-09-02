@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { MarqueeItemObject } from '../../src/Marquee'
-import { BasicMarquee, HorizontalMarquee } from './index'
+import { HorizontalMarquee, VerticalMarquee } from './index'
 
 // Helper function to generate unique IDs
 let idCounter = 1000
@@ -184,23 +184,23 @@ const styles: Record<string, React.CSSProperties> = {
 const initialItems: MarqueeItemObject[] = [
   { id: generateId(), text: '1. Welcome to React Marquee Master!', color: 1, icon: '🎉' },
   { id: generateId(), text: '2. This is a smooth scrolling text component', color: 2, icon: '📝' },
-  // { id: generateId(), text: '3. Built with TypeScript and React', color: 3, icon: '💻' },
+  { id: generateId(), text: '3. Built with TypeScript and React', color: 3, icon: '💻' },
   // { id: generateId(), text: '4. Perfect for announcements and news', color: 4, icon: '📰' },
   // { id: generateId(), text: '5. Easy to customize and use', color: 1, icon: '🔧' },
-  {
-    id: generateId(),
-    text: '6. Debugging marquee animations is like herding cats - they never go where you expect!',
-    color: 1,
-    icon: '🔧',
-  },
+  // {
+  //   id: generateId(),
+  //   text: '6. Debugging marquee animations is like herding cats - they never go where you expect!',
+  //   color: 1,
+  //   icon: '🔧',
+  // },
 ]
 
 interface ItemManagerProps {
-  renderBasicMarquee: boolean
+  renderVerticalMarquee: boolean
   renderHorizontalMarquee: boolean
 }
 
-export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, renderHorizontalMarquee }) => {
+export const ItemManager: React.FC<ItemManagerProps> = ({ renderVerticalMarquee, renderHorizontalMarquee }) => {
   const [items, setItems] = useState(initialItems)
   const [newItemText, setNewItemText] = useState('')
   const [newItemColor, setNewItemColor] = useState(1)
@@ -462,9 +462,9 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderBasicMarquee, re
 
       {/* Marquee Components - Now rendered as children */}
       <div style={styles.marqueeContainer}>
-        {renderBasicMarquee && (
+        {renderVerticalMarquee && (
           <section className="marquee-section">
-            <BasicMarquee items={items} />
+            <VerticalMarquee items={items} />
           </section>
         )}
 

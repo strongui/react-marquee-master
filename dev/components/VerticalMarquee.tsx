@@ -2,14 +2,14 @@ import React, { useState } from 'react'
 import Marquee, { FadeMaskColor, MarqueeDirection, MarqueeItem } from '../../src/Marquee'
 import { ControlPanel } from './ControlPanel'
 
-interface BasicMarqueeProps {
+interface VerticalMarqueeProps {
   items: MarqueeItem[]
 }
 
-export const BasicMarquee: React.FC<BasicMarqueeProps> = ({ items }) => {
+export const VerticalMarquee: React.FC<VerticalMarqueeProps> = ({ items }) => {
   const [state, setState] = useState({
     paused: false,
-    direction: MarqueeDirection.UP,
+    direction: MarqueeDirection.DOWN,
     speed: 40,
     pauseOnHover: false,
     pauseOnItemHover: false,

@@ -200,23 +200,15 @@ export default function Marquee(props: IMarqueeProps) {
   const [isHovered, setIsHovered] = useState(false)
   const [hoveredItemIndex, setHoveredItemIndex] = useState<number | null>(null)
   const [containerIsReady, setContainerIsReady] = useState(false)
-  const [containerState, setContainerState] = useState<{ width: number; height: number }>({ width: 0, height: 0 })
-  const [dummyItemSize, setDummyItemSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 })
 
-  const { width: containerWidth, height: containerHeight } = containerState
+  const [dummyItemSize, setDummyItemSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 })
   const { bottom, marqueeItems, top, left, right } = state
 
   /* Effects */
   // Sync props with internal state when items change
   useEffect(() => {
-    console.log('🔄 [Marquee] Props changed, updating state')
-    console.log('🔄 [Marquee] New marqueeItems:', props.marqueeItems)
-    console.log('🔄 [Marquee] New inverseMarqueeItems:', props.inverseMarqueeItems)
-    console.log('🔄 [Marquee] Props Have Changed, Resetting State:', state)
-
     setState(initState(props))
     setContainerIsReady(false)
-    setContainerState({ width: 0, height: 0 })
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.marqueeItems, props.inverseMarqueeItems])
@@ -229,7 +221,6 @@ export default function Marquee(props: IMarqueeProps) {
 
     // Only recalculate if container size changes (not on every item change)
     const observer = new ResizeObserver(() => {
-      console.log('🔍 [Marquee] Container size changed, triggering useLayoutEffect')
       // The useLayoutEffect will handle the spacer calculation
     })
 
@@ -240,45 +231,105 @@ export default function Marquee(props: IMarqueeProps) {
     }
   }, [])
 
-  const getFirstMarqueeItemSize = useCallback(() => {
-    // Get the actual first item in the array (could be dummy or regular)
-    const firstItem = marqueeItems[0]
-    console.log('🔍 [getFirstMarqueeItemSize] First item:', firstItem)
-    if (!firstItem) return 0
+  const getFirstMarqueeItemSize = useCallback(
+    (skipDummy = false) => {
+      // Get the actual first item in the array (could be dummy or regular)
+      const firstItem = marqueeItems[0]
 
-    // Get the ref for this specific item
-    const itemId = getItemId(firstItem, 0)
-    const itemRef = itemRefs.current.get(itemId)
-    console.log('🔍 [getFirstMarqueeItemSize] Item ID:', itemId, 'Ref:', itemRef)
+      if (!firstItem) return 0
 
-    if (itemRef) {
-      const size = isHorizontal ? itemRef.offsetWidth : itemRef.offsetHeight
-      console.log('🔍 [getFirstMarqueeItemSize] Size:', size, 'isHorizontal:', isHorizontal)
-      return size
-    }
-    console.log('🔍 [getFirstMarqueeItemSize] No ref found, returning 0')
-    return 0
-  }, [isHorizontal, marqueeItems, getItemId])
+      // If we need to skip dummy items, find the first real item
+      if (skipDummy && firstItem && 'isDummy' in firstItem && firstItem.isDummy) {
+        let firstRealItem = null
+        let firstRealIndex = -1
 
-  const getLastMarqueeItemSize = useCallback(() => {
-    // Get the actual last item in the array (could be dummy or regular)
-    const lastItem = marqueeItems[marqueeItems.length - 1]
-    console.log('🔍 [getLastMarqueeItemSize] Last item:', lastItem)
-    if (!lastItem) return 0
+        for (let i = 0; i < marqueeItems.length; i++) {
+          const item = marqueeItems[i]
+          if (item && (!('isDummy' in item) || !item.isDummy)) {
+            firstRealItem = item
+            firstRealIndex = i
+            break
+          }
+        }
 
-    // Get the ref for this specific item
-    const itemId = getItemId(lastItem, marqueeItems.length - 1)
-    const itemRef = itemRefs.current.get(itemId)
-    console.log('🔍 [getLastMarqueeItemSize] Item ID:', itemId, 'Ref:', itemRef)
+        if (!firstRealItem) return 0
 
-    if (itemRef) {
-      const size = isHorizontal ? itemRef.offsetWidth : itemRef.offsetHeight
-      console.log('🔍 [getLastMarqueeItemSize] Size:', size, 'isHorizontal:', isHorizontal)
-      return size
-    }
-    console.log('🔍 [getLastMarqueeItemSize] No ref found, returning 0')
-    return 0
-  }, [isHorizontal, marqueeItems, getItemId])
+        // Get the ref for this specific item
+        const itemId = getItemId(firstRealItem, firstRealIndex)
+        const itemRef = itemRefs.current.get(itemId)
+
+        if (itemRef) {
+          const size = isHorizontal ? itemRef.offsetWidth : itemRef.offsetHeight
+
+          return size
+        }
+        return 0
+      }
+
+      // Get the ref for this specific item
+      const itemId = getItemId(firstItem, 0)
+      const itemRef = itemRefs.current.get(itemId)
+
+      if (itemRef) {
+        const size = isHorizontal ? itemRef.offsetWidth : itemRef.offsetHeight
+
+        return size
+      }
+
+      return 0
+    },
+    [isHorizontal, marqueeItems, getItemId]
+  )
+
+  const getLastMarqueeItemSize = useCallback(
+    (skipDummy = false) => {
+      // Get the actual last item in the array (could be dummy or regular)
+      const lastItem = marqueeItems[marqueeItems.length - 1]
+
+      if (!lastItem) return 0
+
+      // If we need to skip dummy items, find the last real item
+      if (skipDummy && lastItem && 'isDummy' in lastItem && lastItem.isDummy) {
+        let lastRealItem = null
+        let lastRealIndex = -1
+
+        for (let i = marqueeItems.length - 1; i >= 0; i--) {
+          const item = marqueeItems[i]
+          if (item && (!('isDummy' in item) || !item.isDummy)) {
+            lastRealItem = item
+            lastRealIndex = i
+            break
+          }
+        }
+
+        if (!lastRealItem) return 0
+
+        // Get the ref for this specific item
+        const itemId = getItemId(lastRealItem, lastRealIndex)
+        const itemRef = itemRefs.current.get(itemId)
+
+        if (itemRef) {
+          const size = isHorizontal ? itemRef.offsetWidth : itemRef.offsetHeight
+
+          return size
+        }
+        return 0
+      }
+
+      // Get the ref for this specific item
+      const itemId = getItemId(lastItem, marqueeItems.length - 1)
+      const itemRef = itemRefs.current.get(itemId)
+
+      if (itemRef) {
+        const size = isHorizontal ? itemRef.offsetWidth : itemRef.offsetHeight
+
+        return size
+      }
+
+      return 0
+    },
+    [isHorizontal, marqueeItems, getItemId]
+  )
 
   // Set initial off-screen positioning for infinite scroll
   useLayoutEffect(() => {
@@ -289,19 +340,6 @@ export default function Marquee(props: IMarqueeProps) {
       !marqueeContainerRef.current?.getBoundingClientRect ||
       !marqueeRef.current?.getBoundingClientRect
     ) {
-      console.log('🔄 [Marquee] Container is not ready, skipping useLayoutEffect')
-      console.log('🔄 [Marquee] Container is not ready, skipping useLayoutEffect', containerIsReady)
-      console.log('🔄 [Marquee] Container is not ready, skipping useLayoutEffect', marqueeContainerRef.current)
-      console.log('🔄 [Marquee] Container is not ready, skipping useLayoutEffect', marqueeRef.current)
-      console.log(
-        '🔄 [Marquee] Container is not ready, skipping useLayoutEffect',
-        marqueeContainerRef.current?.getBoundingClientRect
-      )
-      console.log(
-        '🔄 [Marquee] Container is not ready, skipping useLayoutEffect',
-        marqueeRef.current?.getBoundingClientRect
-      )
-
       return
     }
 
@@ -323,19 +361,15 @@ export default function Marquee(props: IMarqueeProps) {
       }
     }
 
-    // Get the size of the item that will be recycled next
-    let nextItemSize = 0
-    if (direction === MarqueeDirection.LEFT || direction === MarqueeDirection.UP) {
-      // For LEFT/UP: first item will be recycled
-      nextItemSize = getFirstMarqueeItemSize()
-    } else {
-      // For RIGHT/DOWN: last item will be recycled
-      nextItemSize = getLastMarqueeItemSize()
-    }
+    // Get the size of the largest item for buffer calculation
+    // We need enough buffer to handle the largest item that might scroll in
+    const firstItemSize = getFirstMarqueeItemSize(true) // Skip dummy items
+    const lastItemSize = getLastMarqueeItemSize(true) // Skip dummy items
+    const nextItemSize = Math.max(firstItemSize, lastItemSize)
 
-    const offset = isHorizontal
-      ? containerWidth - totalContentSize + nextItemSize
-      : containerHeight - totalContentSize + nextItemSize
+    // We need content to fill container + first item size for seamless scrolling
+    const requiredContentSize = isHorizontal ? containerWidth + nextItemSize : containerHeight + nextItemSize
+    const offset = requiredContentSize - totalContentSize
 
     // Set initial position based on direction
     if (direction === MarqueeDirection.LEFT) {
@@ -352,20 +386,17 @@ export default function Marquee(props: IMarqueeProps) {
       setState(prev => ({ ...prev, bottom: containerHeight }))
     }
 
-    console.log('🔄 [Marquee] Container is ready, setting containerIsReadyRef to true', containerWidth)
-
     // Calculate dummy spacer size: ensure content fills container + has item ready to scroll in
     let dummySize = { width: 0, height: 0 }
 
-    if (offset) {
-      // Dummy size = gap to fill + space for next item to be recycled
-
+    // We need a spacer if content doesn't fill the required size (container + first item)
+    if (offset > 0) {
+      // Dummy size = gap to fill to reach required content size
       dummySize = isHorizontal ? { width: offset, height: 0 } : { width: 0, height: offset }
     }
 
     // All these will be batched into a single re-render
     setContainerIsReady(true)
-    setContainerState({ width: containerWidth, height: containerHeight })
     setDummyItemSize(dummySize)
   }, [direction, isHorizontal, containerIsReady, getFirstMarqueeItemSize, getLastMarqueeItemSize])
 
@@ -431,8 +462,6 @@ export default function Marquee(props: IMarqueeProps) {
 
     let nextPropValue = state[nextProp]
 
-    console.log('nextPropValue', nextPropValue)
-
     // Next tick value - 1 pixel movement for smooth scrolling
     nextPropValue -= 1
     const marqueeItemSize =
@@ -440,80 +469,29 @@ export default function Marquee(props: IMarqueeProps) {
         ? getFirstMarqueeItemSize() // For UP, LEFT, DOWN: first item gets moved to end
         : getLastMarqueeItemSize() // For RIGHT: last item gets moved to beginning
 
-    console.log('🔍 [Animation] marqueeItemSize:', marqueeItemSize)
-    console.log('🔍 [Animation] nextPropValue:', nextPropValue)
-    console.log('🔍 [Animation] direction:', direction)
-
     // Check if an item has passed completely off-screen in the direction it's traveling
     let marqueeItemPassed = false
-
-    const containerSize = isHorizontal ? containerWidth : containerHeight
-    console.log('🔍 [Animation] containerSize:', containerSize, 'isHorizontal:', isHorizontal)
 
     if (direction === MarqueeDirection.LEFT) {
       // Item started off-screen right, check if it's now completely off-screen left
       const threshold = 0 - marqueeItemSize
       marqueeItemPassed = nextPropValue <= threshold
-      console.log(
-        '🔍 [Animation] LEFT: threshold =',
-        threshold,
-        'nextPropValue =',
-        nextPropValue,
-        'passed =',
-        marqueeItemPassed
-      )
     } else if (direction === MarqueeDirection.RIGHT) {
       // Item started off-screen left, check if it's now completely off-screen right
       const threshold = 0 - marqueeItemSize
       marqueeItemPassed = nextPropValue <= threshold
-      console.log(
-        '🔍 [Animation] RIGHT: threshold =',
-        threshold,
-        'nextPropValue =',
-        nextPropValue,
-        'passed =',
-        marqueeItemPassed
-      )
     } else if (direction === MarqueeDirection.UP) {
       // Item started off-screen below, check if it's now completely off-screen above
       const threshold = 0 - marqueeItemSize
       marqueeItemPassed = nextPropValue <= threshold
-      console.log(
-        '🔍 [Animation] UP: threshold =',
-        threshold,
-        'nextPropValue =',
-        nextPropValue,
-        'passed =',
-        marqueeItemPassed
-      )
     } else if (direction === MarqueeDirection.DOWN) {
       // Item started off-screen above, check if it's now completely off-screen below
       const threshold = 0 - marqueeItemSize
       marqueeItemPassed = nextPropValue <= threshold
-      console.log(
-        '🔍 [Animation] DOWN: threshold =',
-        threshold,
-        'nextPropValue =',
-        nextPropValue,
-        'passed =',
-        marqueeItemPassed
-      )
     }
-
-    console.log('🔍 [Animation] marqueeItemPassed:', marqueeItemPassed)
-    console.log(
-      '🔍 [Animation] Current marqueeItems:',
-      marqueeItems.map((item, i) => ({
-        index: i,
-        id: getItemId(item, i),
-        isDummy: isDummyItem(item),
-        type: typeof item,
-      }))
-    )
 
     // Move items like a conveyor belt for infinite scrolling
     if (marqueeItemPassed) {
-      console.log('🚨 [Marquee] Marquee item passed, moving item')
       if (direction === MarqueeDirection.UP || direction === MarqueeDirection.LEFT) {
         // For UP/LEFT: move first item to end
         const shiftedItem = nextMarqueeItems.shift()
@@ -539,20 +517,7 @@ export default function Marquee(props: IMarqueeProps) {
     })
 
     // Animation complete
-  }, [
-    containerIsReady,
-    shouldPause,
-    marqueeItems,
-    direction,
-    state,
-    getFirstMarqueeItemSize,
-    getLastMarqueeItemSize,
-    isHorizontal,
-    containerWidth,
-    containerHeight,
-    getItemId,
-    isDummyItem,
-  ])
+  }, [containerIsReady, shouldPause, marqueeItems, direction, state, getFirstMarqueeItemSize, getLastMarqueeItemSize])
 
   // Use the stable callback with useInterval
   useInterval(animationFunction, shouldPause ? null : delay || marqueeDefaults.delay)

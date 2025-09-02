@@ -17,6 +17,7 @@ of the box.
 🚀 **[Live Interactive Demo](https://strongui.github.io/react-marquee-master/)** - Try it out yourself!
 
 The live demo includes:
+
 - **Item Manager**: Add, edit, and remove items in real-time
 - **Basic Horizontal Marquee**: Standard scrolling demonstration
 - **Vertical Marquee**: Vertical scrolling showcase
@@ -239,6 +240,7 @@ The marquee component automatically manages spacer items for optimal scrolling:
 ### **How It Works**
 
 The component analyzes your content and only adds spacers when they're actually needed for smooth, continuous scrolling. This ensures:
+
 - Clean appearance for single items
 - Seamless looping for multiple items
 - Optimal performance (no unnecessary DOM elements)
