@@ -12,7 +12,7 @@ const App: React.FC = () => {
 
       <main className="app-main">
         <ItemManager
-          renderBasicMarquee={false}
+          renderBasicMarquee={true}
           renderHorizontalMarquee={true}
         />
       </main>

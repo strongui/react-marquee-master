@@ -323,7 +323,19 @@ export default function Marquee(props: IMarqueeProps) {
       }
     }
 
-    const offset = isHorizontal ? containerWidth - totalContentSize : containerHeight - totalContentSize
+    // Get the size of the item that will be recycled next
+    let nextItemSize = 0
+    if (direction === MarqueeDirection.LEFT || direction === MarqueeDirection.UP) {
+      // For LEFT/UP: first item will be recycled
+      nextItemSize = getFirstMarqueeItemSize()
+    } else {
+      // For RIGHT/DOWN: last item will be recycled
+      nextItemSize = getLastMarqueeItemSize()
+    }
+
+    const offset = isHorizontal
+      ? containerWidth - totalContentSize + nextItemSize
+      : containerHeight - totalContentSize + nextItemSize
 
     // Set initial position based on direction
     if (direction === MarqueeDirection.LEFT) {
@@ -342,26 +354,13 @@ export default function Marquee(props: IMarqueeProps) {
 
     console.log('🔄 [Marquee] Container is ready, setting containerIsReadyRef to true', containerWidth)
 
-    // Calculate dummy spacer size: fill the gap + add space for the next item to be recycled
+    // Calculate dummy spacer size: ensure content fills container + has item ready to scroll in
     let dummySize = { width: 0, height: 0 }
 
-    if (offset > 0) {
-      // Get the size of the item that will be recycled next
-      let nextItemSize = 0
-      if (direction === MarqueeDirection.LEFT || direction === MarqueeDirection.UP) {
-        // For LEFT/UP: first item will be recycled
-        nextItemSize = getFirstMarqueeItemSize()
-      } else {
-        // For RIGHT/DOWN: last item will be recycled
-        nextItemSize = getLastMarqueeItemSize()
-      }
-
+    if (offset) {
       // Dummy size = gap to fill + space for next item to be recycled
-      const totalSize = offset + nextItemSize
 
-      console.log('🔍 [Marquee] Total size:', totalSize, 'offset:', offset, 'nextItemSize:', nextItemSize)
-
-      dummySize = isHorizontal ? { width: totalSize, height: 0 } : { width: 0, height: totalSize }
+      dummySize = isHorizontal ? { width: offset, height: 0 } : { width: 0, height: offset }
     }
 
     // All these will be batched into a single re-render
