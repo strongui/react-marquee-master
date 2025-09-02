@@ -126,6 +126,24 @@ const marqueeItems = [
 />
 ```
 
+**Item click functionality:**
+
+```jsx
+const marqueeItems = [
+  { id: 1, text: "Clickable Item 1" },
+  { id: 2, text: "Clickable Item 2" },
+  { id: 3, text: "Clickable Item 3" }
+];
+
+<Marquee
+  marqueeItems={marqueeItems}
+  onItemClick={(item, index) => {
+    const itemText = typeof item === 'object' && 'text' in item ? item.text : 'Unknown item';
+    alert(`Clicked: "${itemText}" (index: ${index})`);
+  }}
+/>
+```
+
 ### Standalone
 
 You can import `node_modules/react-marquee-master/dist/index.js` into your page. Please make sure
@@ -193,6 +211,7 @@ Notes:
 | onResume                  | function                   |                       |         | Callback function called when marquee is resumed.              |
 | onMarqueeHover           | function                   |                       |         | Callback function called when hovering over marquee container. |
 | onMarqueeItemHover       | function                   |                       |         | Callback function called when hovering over a marquee item.   |
+| onItemClick              | function                   |                       |         | Callback function called when clicking on a marquee item.     |
 
 ## Fade Mask Features
 

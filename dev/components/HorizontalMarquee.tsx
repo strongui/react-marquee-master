@@ -14,6 +14,7 @@ export const HorizontalMarquee: React.FC<HorizontalMarqueeProps> = ({ items }) =
     pauseOnHover: false,
     pauseOnItemHover: false,
     fadeMask: FadeMaskColor.WHITE as FadeMaskColor,
+    itemClickEnabled: false,
   })
 
   const handlePause = () => {
@@ -44,6 +45,15 @@ export const HorizontalMarquee: React.FC<HorizontalMarqueeProps> = ({ items }) =
     setState(prev => ({ ...prev, fadeMask }))
   }
 
+  const handleToggleItemClick = (enabled: boolean) => {
+    setState(prev => ({ ...prev, itemClickEnabled: enabled }))
+  }
+
+  const handleItemClick = (item: MarqueeItem, index: number) => {
+    const itemText = typeof item === 'object' && item !== null && 'text' in item ? item.text : 'Unknown item'
+    alert(`Item clicked: "${itemText}" (index: ${index})`)
+  }
+
   return (
     <>
       <ControlPanel
@@ -55,6 +65,7 @@ export const HorizontalMarquee: React.FC<HorizontalMarqueeProps> = ({ items }) =
         onTogglePauseOnHover={handleTogglePauseOnHover}
         onTogglePauseOnItemHover={handleTogglePauseOnItemHover}
         onFadeMaskChange={handleFadeMaskChange}
+        onToggleItemClick={handleToggleItemClick}
         currentState={state}
         type="horizontal"
       />
@@ -73,6 +84,7 @@ export const HorizontalMarquee: React.FC<HorizontalMarqueeProps> = ({ items }) =
           onResume={() => console.info('Horizontal marquee resumed')}
           onMarqueeHover={() => console.info('Horizontal marquee hovered')}
           onMarqueeItemHover={(item, index) => console.info(`Horizontal marquee item ${index} hovered:`, item)}
+          onItemClick={state.itemClickEnabled ? handleItemClick : undefined}
         />
       </div>
       <hr style={{ margin: '20px 0' }} />

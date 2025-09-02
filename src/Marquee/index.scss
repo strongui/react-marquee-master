@@ -15,6 +15,16 @@
       white-space: nowrap;
       box-sizing: border-box; // Include padding in width calculations
 
+      // Clickable cursor when onItemClick is provided
+      &.marquee-item--clickable {
+        cursor: pointer;
+
+        &:hover {
+          opacity: 0.8;
+          transition: opacity 0.2s ease;
+        }
+      }
+
       // Dummy item styling - completely invisible
       &.marquee-dummy-item {
         opacity: 0;

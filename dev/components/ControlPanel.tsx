@@ -12,6 +12,7 @@ interface ControlPanelProps {
   onTogglePauseOnHover?: (enabled: boolean) => void
   onTogglePauseOnItemHover?: (enabled: boolean) => void
   onFadeMaskChange?: (fadeMask: FadeMaskColor) => void
+  onToggleItemClick?: (enabled: boolean) => void
   currentState: {
     paused: boolean
     direction: MarqueeDirection
@@ -19,6 +20,7 @@ interface ControlPanelProps {
     pauseOnHover: boolean
     pauseOnItemHover: boolean
     fadeMask: FadeMaskColor
+    itemClickEnabled: boolean
   }
   type: string
 }
@@ -34,6 +36,7 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   onTogglePauseOnHover,
   onTogglePauseOnItemHover,
   onFadeMaskChange,
+  onToggleItemClick,
   currentState,
   type,
 }) => {
@@ -131,6 +134,15 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
             className={currentState.pauseOnItemHover ? 'active' : ''}
           >
             {currentState.pauseOnItemHover ? 'Disable' : 'Enable'} Pause on Item Hover
+          </button>
+        )}
+
+        {onToggleItemClick && (
+          <button
+            onClick={() => onToggleItemClick(!currentState.itemClickEnabled)}
+            className={currentState.itemClickEnabled ? 'active' : ''}
+          >
+            {currentState.itemClickEnabled ? 'Disable' : 'Enable'} Item Click
           </button>
         )}
 

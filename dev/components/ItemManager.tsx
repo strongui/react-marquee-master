@@ -6,193 +6,42 @@ import { HorizontalMarquee, VerticalMarquee } from './index'
 let idCounter = 1000
 const generateId = (): string => `item-${++idCounter}`
 
-// Extracted styles to prevent re-renders
-const styles: Record<string, React.CSSProperties> = {
-  title: {
-    marginTop: '0',
-    marginBottom: '16px',
-    color: '#2c3e50',
-    fontSize: '20px',
-    fontWeight: '600',
-  },
-  description: {
-    color: '#6c757d',
-    marginBottom: '20px',
-    fontSize: '14px',
-    lineHeight: '1.5',
-  },
-  inputGroup: {
-    display: 'flex',
-    gap: '12px',
-    alignItems: 'center',
-    marginBottom: '20px',
-  },
-  input: {
-    flex: 1,
-    padding: '10px 12px',
-    borderRadius: '6px',
-    border: '1px solid #e1e5e9',
-    fontSize: '14px',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-  },
-  select: {
-    padding: '10px 12px',
-    borderRadius: '6px',
-    border: '1px solid #e1e5e9',
-    fontSize: '14px',
-    backgroundColor: 'white',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-  },
-  addButton: {
-    padding: '10px 20px',
-    backgroundColor: '#007bff',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    fontSize: '14px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 2px 4px rgba(0,123,255,0.3)',
-  },
-  resetButton: {
-    padding: '10px 16px',
-    backgroundColor: '#6c757d',
-    color: 'white',
-    border: 'none',
-    borderRadius: '6px',
-    fontSize: '14px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 2px 4px rgba(108,117,125,0.3)',
-  },
-  itemList: {
-    maxHeight: '250px',
-    overflowY: 'auto',
-    border: '1px solid #e9ecef',
-    borderRadius: '8px',
-    padding: '16px',
-    backgroundColor: '#f8f9fa',
-    boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.05)',
-  },
-  itemRow: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '12px',
-    padding: '12px',
-    borderBottom: '1px solid #f0f0f0',
-    borderRadius: '6px',
-    transition: 'all 0.2s ease',
-    marginBottom: '8px',
-  },
-  itemText: {
-    flex: 1,
-    fontWeight: '500',
-  },
-  editInput: {
-    flex: 1,
-    padding: '6px 10px',
-    borderRadius: '5px',
-    border: '1px solid #e1e5e9',
-    fontSize: '13px',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-  },
-  saveButton: {
-    padding: '6px 12px',
-    backgroundColor: '#28a745',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    fontSize: '13px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 2px 4px rgba(40,167,69,0.3)',
-  },
-  cancelButton: {
-    padding: '6px 12px',
-    backgroundColor: '#6c757d',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    fontSize: '13px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 2px 4px rgba(108,117,125,0.3)',
-  },
-  editButton: {
-    padding: '6px 12px',
-    backgroundColor: '#007bff',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    fontSize: '13px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 2px 4px rgba(0,123,255,0.3)',
-  },
-  removeButton: {
-    padding: '6px 12px',
-    backgroundColor: '#dc3545',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    fontSize: '13px',
-    fontWeight: '500',
-    cursor: 'pointer',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 2px 4px rgba(220,53,69,0.3)',
-  },
-  removeButtonDisabled: {
-    padding: '6px 12px',
-    backgroundColor: '#6c757d',
-    color: 'white',
-    border: 'none',
-    borderRadius: '5px',
-    fontSize: '13px',
-    fontWeight: '500',
-    cursor: 'not-allowed',
-    transition: 'all 0.2s ease',
-    boxShadow: '0 2px 4px rgba(108,117,125,0.3)',
-    opacity: 0.6,
-  },
-  summary: {
-    marginTop: '16px',
-    fontSize: '14px',
-    color: '#6c757d',
-    padding: '12px 16px',
-    backgroundColor: '#f8f9fa',
-    borderRadius: '6px',
-    border: '1px solid #e9ecef',
-  },
-  summaryStrong: {
-    color: '#495057',
-  },
-  marqueeContainer: {
-    marginTop: '40px',
-    minHeight: '400px',
-  },
-}
+// Available icons for the dropdown
+const availableIcons = [
+  { value: '🎉', label: '🎉 Party' },
+  { value: '📝', label: '📝 Note' },
+  { value: '💻', label: '💻 Computer' },
+  { value: '📰', label: '📰 News' },
+  { value: '🔧', label: '🔧 Tools' },
+  { value: '🐱', label: '🐱 Cat' },
+  { value: '⭐', label: '⭐ Star' },
+  { value: '🚀', label: '🚀 Rocket' },
+  { value: '💡', label: '💡 Lightbulb' },
+  { value: '🎯', label: '🎯 Target' },
+  { value: '🔥', label: '🔥 Fire' },
+  { value: '❤️', label: '❤️ Heart' },
+  { value: '🎨', label: '🎨 Art' },
+  { value: '📱', label: '📱 Phone' },
+  { value: '🌍', label: '🌍 World' },
+  { value: '🎵', label: '🎵 Music' },
+  { value: '🏆', label: '🏆 Trophy' },
+  { value: '💰', label: '💰 Money' },
+  { value: '🎪', label: '🎪 Circus' },
+  { value: '🌈', label: '🌈 Rainbow' },
+]
 
 const initialItems: MarqueeItemObject[] = [
   { id: generateId(), text: '1. Welcome to React Marquee Master!', color: 1, icon: '🎉' },
   { id: generateId(), text: '2. This is a smooth scrolling text component', color: 2, icon: '📝' },
   { id: generateId(), text: '3. Built with TypeScript and React', color: 3, icon: '💻' },
-  // { id: generateId(), text: '4. Perfect for announcements and news', color: 4, icon: '📰' },
-  // { id: generateId(), text: '5. Easy to customize and use', color: 1, icon: '🔧' },
-  // {
-  //   id: generateId(),
-  //   text: '6. Debugging marquee animations is like herding cats - they never go where you expect!',
-  //   color: 1,
-  //   icon: '🔧',
-  // },
+  { id: generateId(), text: '4. Perfect for announcements and news', color: 4, icon: '📰' },
+  { id: generateId(), text: '5. Easy to customize and use', color: 1, icon: '🔧' },
+  {
+    id: generateId(),
+    text: '6. Debugging marquee animations is like herding cats - they never go where you expect!',
+    color: 1,
+    icon: '🐱',
+  },
 ]
 
 interface ItemManagerProps {
@@ -204,8 +53,11 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderVerticalMarquee,
   const [items, setItems] = useState(initialItems)
   const [newItemText, setNewItemText] = useState('')
   const [newItemColor, setNewItemColor] = useState(1)
+  const [newItemIcon, setNewItemIcon] = useState('🎉')
   const [editingItem, setEditingItem] = useState<string | null>(null)
   const [editText, setEditText] = useState('')
+  const [editIcon, setEditIcon] = useState('🎉')
+  const [itemClickEnabled, setItemClickEnabled] = useState(false)
 
   const handleAddItem = () => {
     if (newItemText.trim()) {
@@ -213,10 +65,12 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderVerticalMarquee,
         id: generateId(),
         text: newItemText.trim(),
         color: newItemColor,
+        icon: newItemIcon,
       }
       setItems([...items, newItem])
       setNewItemText('')
       setNewItemColor(1)
+      setNewItemIcon('🎉')
     }
   }
 
@@ -231,20 +85,23 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderVerticalMarquee,
     if (item) {
       setEditingItem(id)
       setEditText(item.text)
+      setEditIcon(item.icon || '🎉')
     }
   }
 
   const handleSaveEdit = (id: string) => {
     if (editText.trim()) {
-      setItems(items.map(item => (item.id === id ? { ...item, text: editText.trim() } : item)))
+      setItems(items.map(item => (item.id === id ? { ...item, text: editText.trim(), icon: editIcon } : item)))
       setEditingItem(null)
       setEditText('')
+      setEditIcon('🎉')
     }
   }
 
   const handleCancelEdit = () => {
     setEditingItem(null)
     setEditText('')
+    setEditIcon('🎉')
   }
 
   const handleColorChange = (id: string, color: number) => {
@@ -255,92 +112,86 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderVerticalMarquee,
     setItems([...initialItems])
   }
 
+  const handleToggleItemClick = (enabled: boolean) => {
+    setItemClickEnabled(enabled)
+  }
+
+  const handleItemClick = (item: any, index: number) => {
+    const itemText = typeof item === 'object' && item !== null && 'text' in item ? item.text : 'Unknown item'
+    alert(`Item clicked: "${itemText}" (index: ${index})`)
+  }
+
   return (
     <div className="item-manager-section">
-      <h3 style={styles.title}>🎯 Item Manager - Shared Across All Marquees</h3>
-      <p style={styles.description}>Add, edit, and manage items here. Changes will affect all marquees below.</p>
+      <h3 className="item-manager-title">🎯 Item Manager - Shared Across All Marquees</h3>
+      <p className="item-manager-description">
+        Add, edit, and manage items here. Changes will affect all marquees below.
+        <br />
+        <strong>💡 Tip:</strong> Use the "Enable Item Click" button to make marquee items clickable, or use the
+        individual toggles in each marquee's control panel.
+      </p>
 
       <div className="controls">
-        <div style={styles.inputGroup}>
+        <div className="item-manager-input-group">
           <input
             type="text"
             value={newItemText}
             onChange={e => setNewItemText(e.target.value)}
             placeholder="Enter new item text..."
-            style={styles.input}
-            onFocus={e => {
-              e.target.style.borderColor = '#007bff'
-              e.target.style.boxShadow = '0 0 0 3px rgba(0,123,255,0.1)'
-            }}
-            onBlur={e => {
-              e.target.style.borderColor = '#e1e5e9'
-              e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'
-            }}
+            className="item-manager-input"
           />
           <select
             value={newItemColor}
             onChange={e => setNewItemColor(Number(e.target.value))}
-            style={styles.select}
-            onFocus={e => {
-              e.target.style.borderColor = '#007bff'
-              e.target.style.boxShadow = '0 0 0 3px rgba(0,123,255,0.1)'
-            }}
-            onBlur={e => {
-              e.target.style.borderColor = '#e1e5e9'
-              e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'
-            }}
+            className="item-manager-select"
           >
             <option value={1}>Blue-Purple</option>
             <option value={2}>Pink-Red</option>
             <option value={3}>Blue-Cyan</option>
             <option value={4}>Green-Cyan</option>
           </select>
+          <select
+            value={newItemIcon}
+            onChange={e => setNewItemIcon(e.target.value)}
+            className="item-manager-select"
+          >
+            {availableIcons.map(icon => (
+              <option
+                key={icon.value}
+                value={icon.value}
+              >
+                {icon.label}
+              </option>
+            ))}
+          </select>
           <button
             onClick={handleAddItem}
             disabled={!newItemText.trim()}
-            style={{
-              ...styles.addButton,
-              opacity: !newItemText.trim() ? 0.6 : 1,
-            }}
-            onMouseEnter={e => {
-              if (newItemText.trim()) {
-                e.currentTarget.style.transform = 'translateY(-1px)'
-                e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,123,255,0.4)'
-              }
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,123,255,0.3)'
-            }}
+            className="item-manager-button item-manager-button--primary"
           >
             ➕ Add Item
           </button>
           <button
             onClick={handleResetToDefault}
-            style={styles.resetButton}
-            onMouseEnter={e => {
-              e.currentTarget.style.transform = 'translateY(-1px)'
-              e.currentTarget.style.boxShadow = '0 4px 8px rgba(108,117,125,0.4)'
-            }}
-            onMouseLeave={e => {
-              e.currentTarget.style.transform = 'translateY(0)'
-              e.currentTarget.style.boxShadow = '0 2px 4px rgba(108,117,125,0.3)'
-            }}
+            className="item-manager-button item-manager-button--secondary"
           >
             🔄 Reset
+          </button>
+          <button
+            onClick={() => handleToggleItemClick(!itemClickEnabled)}
+            className={`item-manager-button ${itemClickEnabled ? 'item-manager-button--success' : 'item-manager-button--secondary'}`}
+          >
+            {itemClickEnabled ? '🖱️ Disable' : '🖱️ Enable'} Item Click
           </button>
         </div>
       </div>
 
       {/* Item List */}
-      <div style={styles.itemList}>
+      <div className="item-manager-item-list">
         {items.map(item => (
           <div
             key={item.id}
-            style={{
-              ...styles.itemRow,
-              backgroundColor: editingItem === item.id ? '#e9ecef' : 'transparent',
-            }}
+            className={`item-manager-item-row ${editingItem === item.id ? 'item-manager-item-row--editing' : ''}`}
           >
             {editingItem === item.id ? (
               <>
@@ -348,69 +199,42 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderVerticalMarquee,
                   type="text"
                   value={editText}
                   onChange={e => setEditText(e.target.value)}
-                  style={styles.editInput}
-                  onFocus={e => {
-                    e.target.style.borderColor = '#007bff'
-                    e.target.style.boxShadow = '0 0 0 2px rgba(0,123,255,0.1)'
-                  }}
-                  onBlur={e => {
-                    e.target.style.borderColor = '#e1e5e9'
-                    e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'
-                  }}
+                  className="item-manager-edit-input"
                 />
+                <select
+                  value={editIcon}
+                  onChange={e => setEditIcon(e.target.value)}
+                  className="item-manager-color-select"
+                >
+                  {availableIcons.map(icon => (
+                    <option
+                      key={icon.value}
+                      value={icon.value}
+                    >
+                      {icon.label}
+                    </option>
+                  ))}
+                </select>
                 <button
                   onClick={() => handleSaveEdit(item.id as string)}
-                  style={styles.saveButton}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.transform = 'translateY(-1px)'
-                    e.currentTarget.style.boxShadow = '0 4px 8px rgba(40,167,69,0.4)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(40,167,69,0.3)'
-                  }}
+                  className="item-manager-button item-manager-button--small item-manager-button--success"
                 >
                   ✅ Save
                 </button>
                 <button
                   onClick={handleCancelEdit}
-                  style={styles.cancelButton}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.transform = 'translateY(-1px)'
-                    e.currentTarget.style.boxShadow = '0 4px 8px rgba(108,117,125,0.4)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(108,117,125,0.3)'
-                  }}
+                  className="item-manager-button item-manager-button--small item-manager-button--secondary"
                 >
                   ❌ Cancel
                 </button>
               </>
             ) : (
               <>
-                <span style={styles.itemText}>{item.text}</span>
+                <span className="item-manager-item-text">{item.text}</span>
                 <select
                   value={item.color}
                   onChange={e => handleColorChange(item.id as string, Number(e.target.value))}
-                  style={{
-                    padding: '6px 10px',
-                    borderRadius: '5px',
-                    border: '1px solid #e1e5e9',
-                    fontSize: '13px',
-                    backgroundColor: 'white',
-                    cursor: 'pointer',
-                    transition: 'all 0.2s ease',
-                    boxShadow: '0 1px 3px rgba(0,0,0,0.1)',
-                  }}
-                  onFocus={e => {
-                    e.target.style.borderColor = '#007bff'
-                    e.target.style.boxShadow = '0 0 0 2px rgba(0,123,255,0.1)'
-                  }}
-                  onBlur={e => {
-                    e.target.style.borderColor = '#e1e5e9'
-                    e.target.style.boxShadow = '0 1px 3px rgba(0,0,0,0.1)'
-                  }}
+                  className="item-manager-color-select"
                 >
                   <option value={1}>Blue-Purple</option>
                   <option value={2}>Pink-Red</option>
@@ -419,33 +243,14 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderVerticalMarquee,
                 </select>
                 <button
                   onClick={() => handleEditItem(item.id as string)}
-                  style={styles.editButton}
-                  onMouseEnter={e => {
-                    e.currentTarget.style.transform = 'translateY(-1px)'
-                    e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,123,255,0.4)'
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.boxShadow = '0 2px 4px rgba(0,123,255,0.3)'
-                  }}
+                  className="item-manager-button item-manager-button--small item-manager-button--primary"
                 >
                   ✏️ Edit
                 </button>
                 <button
                   onClick={() => handleRemoveItem(item.id as string)}
                   disabled={items.length <= 1}
-                  style={items.length <= 1 ? styles.removeButtonDisabled : styles.removeButton}
-                  onMouseEnter={e => {
-                    if (items.length > 1) {
-                      e.currentTarget.style.transform = 'translateY(-1px)'
-                      e.currentTarget.style.boxShadow = '0 4px 8px rgba(220,53,69,0.4)'
-                    }
-                  }}
-                  onMouseLeave={e => {
-                    e.currentTarget.style.transform = 'translateY(0)'
-                    e.currentTarget.style.boxShadow =
-                      items.length <= 1 ? '0 2px 4px rgba(108,117,125,0.3)' : '0 2px 4px rgba(220,53,69,0.3)'
-                  }}
+                  className={`item-manager-button item-manager-button--small ${items.length <= 1 ? 'item-manager-button--secondary' : 'item-manager-button--danger'}`}
                 >
                   🗑️ Remove
                 </button>
@@ -455,13 +260,13 @@ export const ItemManager: React.FC<ItemManagerProps> = ({ renderVerticalMarquee,
         ))}
       </div>
 
-      <div style={styles.summary}>
-        <strong style={styles.summaryStrong}>Total Items:</strong> {items.length} |{' '}
-        <strong style={styles.summaryStrong}>Colors Used:</strong> {new Set(items.map(item => item.color)).size} unique
+      <div className="item-manager-summary">
+        <strong>Total Items:</strong> {items.length} | <strong>Colors Used:</strong>{' '}
+        {new Set(items.map(item => item.color)).size} unique
       </div>
 
       {/* Marquee Components - Now rendered as children */}
-      <div style={styles.marqueeContainer}>
+      <div className="item-manager-marquee-container">
         {renderVerticalMarquee && (
           <section className="marquee-section">
             <VerticalMarquee items={items} />

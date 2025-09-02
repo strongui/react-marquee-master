@@ -61,6 +61,7 @@ export interface IMarqueeProps {
   onResume?: () => void
   onMarqueeHover?: () => void
   onMarqueeItemHover?: (item: MarqueeItem, index: number) => void
+  onItemClick?: (item: MarqueeItem, index: number) => void
 }
 
 const marqueeDefaults = {
@@ -104,6 +105,7 @@ export default function Marquee(props: IMarqueeProps) {
     marqueeContainerClassName,
     marqueeItemClassName,
     minHeight,
+    onItemClick,
   } = props
 
   /* Vars */
@@ -421,6 +423,15 @@ export default function Marquee(props: IMarqueeProps) {
     return style
   }, [direction, top, right, bottom, left, containerIsReady])
 
+  const containerClassName = useMemo(() => {
+    const baseClass = 'marquee-container'
+    const orientationClass = isHorizontal ? ' horizontal' : ' vertical'
+    const fadeMaskClass = applyFadeMask ? ` fade-mask-${fadeMaskColor}` : ''
+    const customClass = marqueeContainerClassName ? ` ${marqueeContainerClassName}` : ''
+
+    return `${baseClass}${orientationClass}${fadeMaskClass}${customClass}`
+  }, [isHorizontal, applyFadeMask, fadeMaskColor, marqueeContainerClassName])
+
   // Determine if marquee should be paused due to hover
   const shouldPause = paused || (pauseOnHover && isHovered) || (pauseOnItemHover && hoveredItemIndex !== null)
 
@@ -539,7 +550,7 @@ export default function Marquee(props: IMarqueeProps) {
     return (
       <div
         ref={el => registerItemRef(itemId, el)}
-        className={`marquee-item${marqueeItemClassName ? ` ${marqueeItemClassName}` : ''}`}
+        className={`marquee-item${marqueeItemClassName ? ` ${marqueeItemClassName}` : ''}${onItemClick ? ' marquee-item--clickable' : ''}`}
         key={itemId}
         data-color={itemColor}
         onMouseEnter={() => {
@@ -553,6 +564,9 @@ export default function Marquee(props: IMarqueeProps) {
             setHoveredItemIndex(null)
           }
         }}
+        onClick={() => {
+          onItemClick?.(marqueeItem, i)
+        }}
       >
         {itemIcon && <span className="marquee-item-icon">{itemIcon}</span>}
         {itemIcon && <span className="marquee-item-separator"> </span>}
@@ -563,10 +577,7 @@ export default function Marquee(props: IMarqueeProps) {
 
   return (
     <div
-      key={`marquee-${marqueeItems.length}-${JSON.stringify(marqueeItems.map(item => (typeof item === 'object' && 'id' in item ? item.id : item)))}`}
-      className={`marquee-container${isHorizontal ? ' horizontal' : ' vertical'}${
-        applyFadeMask ? ` fade-mask-${fadeMaskColor}` : ''
-      }${marqueeContainerClassName ? ` ${marqueeContainerClassName}` : ''}`}
+      className={containerClassName}
       ref={marqueeContainerRef}
       style={marqueeContainerStyle}
       onMouseEnter={() => {

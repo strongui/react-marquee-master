@@ -15,6 +15,7 @@ export const VerticalMarquee: React.FC<VerticalMarqueeProps> = ({ items }) => {
     pauseOnItemHover: false,
     fadeMask: FadeMaskColor.WHITE,
     reversed: false,
+    itemClickEnabled: false,
   })
 
   const handlePause = () => {
@@ -45,6 +46,15 @@ export const VerticalMarquee: React.FC<VerticalMarqueeProps> = ({ items }) => {
     setState(prev => ({ ...prev, fadeMask }))
   }
 
+  const handleToggleItemClick = (enabled: boolean) => {
+    setState(prev => ({ ...prev, itemClickEnabled: enabled }))
+  }
+
+  const handleItemClick = (item: MarqueeItem, index: number) => {
+    const itemText = typeof item === 'object' && item !== null && 'text' in item ? item.text : 'Unknown item'
+    alert(`Item clicked: "${itemText}" (index: ${index})`)
+  }
+
   return (
     <>
       <ControlPanel
@@ -56,6 +66,7 @@ export const VerticalMarquee: React.FC<VerticalMarqueeProps> = ({ items }) => {
         onTogglePauseOnHover={handleTogglePauseOnHover}
         onTogglePauseOnItemHover={handleTogglePauseOnItemHover}
         onFadeMaskChange={handleFadeMaskChange}
+        onToggleItemClick={handleToggleItemClick}
         currentState={state}
         type="basic"
       />
@@ -74,6 +85,7 @@ export const VerticalMarquee: React.FC<VerticalMarqueeProps> = ({ items }) => {
           onResume={() => console.info('Basic marquee resumed')}
           onMarqueeHover={() => console.info('Basic marquee hovered')}
           onMarqueeItemHover={(item, index) => console.info(`Basic marquee item ${index} hovered:`, item)}
+          onItemClick={state.itemClickEnabled ? handleItemClick : undefined}
         />
       </div>
       <hr style={{ margin: '20px 0' }} />
