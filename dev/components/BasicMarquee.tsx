@@ -14,6 +14,7 @@ export const BasicMarquee: React.FC<BasicMarqueeProps> = ({ items }) => {
     pauseOnHover: false,
     pauseOnItemHover: false,
     fadeMask: FadeMaskColor.WHITE,
+    reversed: false,
   })
 
   const handlePause = () => {

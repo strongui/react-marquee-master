@@ -58,10 +58,7 @@ export const HorizontalMarquee: React.FC<HorizontalMarqueeProps> = ({ items }) =
         currentState={state}
         type="horizontal"
       />
-      <div
-        className="marquee-demo"
-        style={{ height: 80 }}
-      >
+      <div className="marquee-demo">
         <Marquee
           marqueeItems={items}
           direction={state.direction}

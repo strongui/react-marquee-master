@@ -1,21 +1,26 @@
-import React, { useState } from 'react';
-import { MarqueeDirection, FadeMaskColor } from '../../src/Marquee';
+import React, { useState } from 'react'
+import { FadeMaskColor, MarqueeDirection } from '../../src/Marquee'
 
 interface ControlPanelProps {
-  title: string;
-  onPause: () => void;
-  onResume: () => void;
-  onDirectionChange?: (direction: MarqueeDirection) => void;
-  onSpeedChange?: (speed: number) => void;
-  onBothDirectionChange?: (horizontal: string, vertical: string) => void;
-  onAddItem?: () => void;
-  onRemoveItem?: () => void;
-  onToggleReverse?: () => void;
-  onTogglePauseOnHover?: (enabled: boolean) => void;
-  onTogglePauseOnItemHover?: (enabled: boolean) => void;
-  onFadeMaskChange?: (fadeMask: FadeMaskColor) => void;
-  currentState: any;
-  type: string;
+  title: string
+  onPause: () => void
+  onResume: () => void
+  onDirectionChange?: (direction: MarqueeDirection) => void
+  onSpeedChange?: (speed: number) => void
+  onAddItem?: () => void
+  onRemoveItem?: () => void
+  onTogglePauseOnHover?: (enabled: boolean) => void
+  onTogglePauseOnItemHover?: (enabled: boolean) => void
+  onFadeMaskChange?: (fadeMask: FadeMaskColor) => void
+  currentState: {
+    paused: boolean
+    direction: MarqueeDirection
+    speed: number
+    pauseOnHover: boolean
+    pauseOnItemHover: boolean
+    fadeMask: FadeMaskColor
+  }
+  type: string
 }
 
 export const ControlPanel: React.FC<ControlPanelProps> = ({
@@ -24,49 +29,67 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
   onResume,
   onDirectionChange,
   onSpeedChange,
-  onBothDirectionChange,
   onAddItem,
   onRemoveItem,
-  onToggleReverse,
   onTogglePauseOnHover,
   onTogglePauseOnItemHover,
   onFadeMaskChange,
   currentState,
   type,
 }) => {
-  const [paused, setPaused] = useState(false);
+  const [paused, setPaused] = useState(false)
 
   const handlePauseToggle = () => {
-    const newPaused = !paused;
-    setPaused(newPaused);
+    const newPaused = !paused
+    setPaused(newPaused)
     if (newPaused) {
-      onPause();
+      onPause()
     } else {
-      onResume();
+      onResume()
     }
-  };
+  }
 
   // Determine which direction buttons to show based on type
   const renderDirectionButtons = () => {
-    if (!onDirectionChange) return null;
+    if (!onDirectionChange) return null
 
     if (type === 'horizontal') {
       return (
         <>
-          <button onClick={() => onDirectionChange(MarqueeDirection.LEFT)}>← Left</button>
-          <button onClick={() => onDirectionChange(MarqueeDirection.RIGHT)}>→ Right</button>
+          <button
+            className={currentState.direction === MarqueeDirection.LEFT ? 'active' : ''}
+            onClick={() => onDirectionChange(MarqueeDirection.LEFT)}
+          >
+            ← Left
+          </button>
+          <button
+            className={currentState.direction === MarqueeDirection.RIGHT ? 'active' : ''}
+            onClick={() => onDirectionChange(MarqueeDirection.RIGHT)}
+          >
+            → Right
+          </button>
         </>
-      );
+      )
     } else {
       // Default to vertical (up/down) for basic and other types
       return (
         <>
-          <button onClick={() => onDirectionChange(MarqueeDirection.UP)}>↑ Up</button>
-          <button onClick={() => onDirectionChange(MarqueeDirection.DOWN)}>↓ Down</button>
+          <button
+            className={currentState.direction === MarqueeDirection.UP ? 'active' : ''}
+            onClick={() => onDirectionChange(MarqueeDirection.UP)}
+          >
+            ↑ Up
+          </button>
+          <button
+            className={currentState.direction === MarqueeDirection.DOWN ? 'active' : ''}
+            onClick={() => onDirectionChange(MarqueeDirection.DOWN)}
+          >
+            ↓ Down
+          </button>
         </>
-      );
+      )
     }
-  };
+  }
 
   return (
     <div className="demo-section">
@@ -84,29 +107,14 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
               min="5"
               max="100"
               value={currentState.speed || 40}
-              onChange={(e) => onSpeedChange(parseInt(e.target.value))}
+              onChange={e => onSpeedChange(parseInt(e.target.value))}
             />
           </label>
-        )}
-
-        {onBothDirectionChange && (
-          <>
-            <button onClick={() => onBothDirectionChange('left', 'up')}>↖ Left + Up</button>
-            <button onClick={() => onBothDirectionChange('right', 'up')}>↗ Right + Up</button>
-            <button onClick={() => onBothDirectionChange('left', 'down')}>↙ Left + Down</button>
-            <button onClick={() => onBothDirectionChange('right', 'down')}>↘ Right + Down</button>
-          </>
         )}
 
         {onAddItem && <button onClick={onAddItem}>Add Item</button>}
 
         {onRemoveItem && <button onClick={onRemoveItem}>Remove Item</button>}
-
-        {onToggleReverse && (
-          <button onClick={onToggleReverse}>
-            {currentState.reversed ? 'Normal Order' : 'Reverse Order'}
-          </button>
-        )}
 
         {onTogglePauseOnHover && (
           <button
@@ -155,15 +163,10 @@ export const ControlPanel: React.FC<ControlPanelProps> = ({
       </div>
 
       <div className="status">
-        Status: {paused ? 'Paused' : 'Running'} |
-        {currentState.direction && ` Direction: ${currentState.direction}`} |
+        Status: {paused ? 'Paused' : 'Running'} |{currentState.direction && ` Direction: ${currentState.direction}`} |
         {currentState.speed && ` Speed: ${currentState.speed}ms`}
-        {currentState.bothDirection &&
-          ` | Both: (${currentState.bothDirection.horizontal}, ${currentState.bothDirection.vertical})`}
-        {currentState.items && ` | Items: ${currentState.items.length}`}
-        {currentState.reversed !== undefined && ` | Reversed: ${currentState.reversed}`}
         {currentState.fadeMask && ` | Fade Mask: ${currentState.fadeMask}`}
       </div>
     </div>
-  );
-};
+  )
+}

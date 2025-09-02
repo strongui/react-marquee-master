@@ -43,7 +43,6 @@ body {
   background: white;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
-  overflow: hidden;
   margin-bottom: 30px;
 }
 
@@ -124,7 +123,6 @@ body {
   border: 1px solid #e0e0e0;
   border-radius: 6px;
   position: relative;
-  overflow: hidden;
 }
 
 .marquee-item {
