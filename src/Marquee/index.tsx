@@ -201,7 +201,6 @@ export default function Marquee(props: IMarqueeProps) {
   const [hoveredItemIndex, setHoveredItemIndex] = useState<number | null>(null)
   const [containerIsReady, setContainerIsReady] = useState(false)
   const [containerState, setContainerState] = useState<{ width: number; height: number }>({ width: 0, height: 0 })
-  const [marqueeState, setMarqueeState] = useState<{ width: number; height: number }>({ width: 0, height: 0 })
   const [dummyItemSize, setDummyItemSize] = useState<{ width: number; height: number }>({ width: 0, height: 0 })
 
   const { width: containerWidth, height: containerHeight } = containerState
@@ -218,7 +217,6 @@ export default function Marquee(props: IMarqueeProps) {
     setState(initState(props))
     setContainerIsReady(false)
     setContainerState({ width: 0, height: 0 })
-    setMarqueeState({ width: 0, height: 0 })
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.marqueeItems, props.inverseMarqueeItems])
@@ -336,10 +334,10 @@ export default function Marquee(props: IMarqueeProps) {
       setState(prev => ({ ...prev, right: containerWidth }))
     } else if (direction === MarqueeDirection.UP) {
       // Start items off-screen below
-      setState(prev => ({ ...prev, top: containerWidth }))
+      setState(prev => ({ ...prev, top: containerHeight }))
     } else if (direction === MarqueeDirection.DOWN) {
       // Start items off-screen above
-      setState(prev => ({ ...prev, bottom: containerWidth }))
+      setState(prev => ({ ...prev, bottom: containerHeight }))
     }
 
     console.log('🔄 [Marquee] Container is ready, setting containerIsReadyRef to true', containerWidth)
@@ -361,13 +359,14 @@ export default function Marquee(props: IMarqueeProps) {
       // Dummy size = gap to fill + space for next item to be recycled
       const totalSize = offset + nextItemSize
 
+      console.log('🔍 [Marquee] Total size:', totalSize, 'offset:', offset, 'nextItemSize:', nextItemSize)
+
       dummySize = isHorizontal ? { width: totalSize, height: 0 } : { width: 0, height: totalSize }
     }
 
     // All these will be batched into a single re-render
     setContainerIsReady(true)
     setContainerState({ width: containerWidth, height: containerHeight })
-    setMarqueeState({ width: containerWidth, height: containerHeight })
     setDummyItemSize(dummySize)
   }, [direction, isHorizontal, containerIsReady, getFirstMarqueeItemSize, getLastMarqueeItemSize])
 
@@ -438,9 +437,9 @@ export default function Marquee(props: IMarqueeProps) {
     // Next tick value - 1 pixel movement for smooth scrolling
     nextPropValue -= 1
     const marqueeItemSize =
-      direction === MarqueeDirection.UP || direction === MarqueeDirection.LEFT
-        ? getFirstMarqueeItemSize()
-        : getLastMarqueeItemSize()
+      direction === MarqueeDirection.LEFT || direction === MarqueeDirection.UP
+        ? getFirstMarqueeItemSize() // For UP, LEFT, DOWN: first item gets moved to end
+        : getLastMarqueeItemSize() // For RIGHT: last item gets moved to beginning
 
     console.log('🔍 [Animation] marqueeItemSize:', marqueeItemSize)
     console.log('🔍 [Animation] nextPropValue:', nextPropValue)
@@ -490,8 +489,8 @@ export default function Marquee(props: IMarqueeProps) {
       )
     } else if (direction === MarqueeDirection.DOWN) {
       // Item started off-screen above, check if it's now completely off-screen below
-      const threshold = containerSize + marqueeItemSize
-      marqueeItemPassed = nextPropValue >= threshold
+      const threshold = 0 - marqueeItemSize
+      marqueeItemPassed = nextPropValue <= threshold
       console.log(
         '🔍 [Animation] DOWN: threshold =',
         threshold,
@@ -527,12 +526,6 @@ export default function Marquee(props: IMarqueeProps) {
       }
       // Reset position after moving item
       nextPropValue = nextPropValue + marqueeItemSize
-
-      if (isHorizontal) {
-        setMarqueeState(prev => ({ ...prev, width: containerWidth + marqueeItemSize }))
-      } else {
-        setMarqueeState(prev => ({ ...prev, height: containerHeight + marqueeItemSize }))
-      }
     }
 
     setState(s => {
@@ -614,37 +607,32 @@ export default function Marquee(props: IMarqueeProps) {
   })
 
   return (
-    <>
-      <div>
-        <pre>{JSON.stringify(state, null, 2)}</pre>
-      </div>
+    <div
+      key={`marquee-${marqueeItems.length}-${JSON.stringify(marqueeItems.map(item => (typeof item === 'object' && 'id' in item ? item.id : item)))}`}
+      className={`marquee-container${isHorizontal ? ' horizontal' : ' vertical'}${
+        applyFadeMask ? ` fade-mask-${fadeMaskColor}` : ''
+      }${marqueeContainerClassName ? ` ${marqueeContainerClassName}` : ''}`}
+      ref={marqueeContainerRef}
+      style={marqueeContainerStyle}
+      onMouseEnter={() => {
+        if (pauseOnHover) {
+          setIsHovered(true)
+          onMarqueeHover?.()
+        }
+      }}
+      onMouseLeave={() => {
+        if (pauseOnHover) {
+          setIsHovered(false)
+        }
+      }}
+    >
       <div
-        key={`marquee-${marqueeItems.length}-${JSON.stringify(marqueeItems.map(item => (typeof item === 'object' && 'id' in item ? item.id : item)))}`}
-        className={`marquee-container${isHorizontal ? ' horizontal' : ''}${
-          applyFadeMask ? ` fade-mask-${fadeMaskColor}` : ''
-        }${marqueeContainerClassName ? ` ${marqueeContainerClassName}` : ''}`}
-        ref={marqueeContainerRef}
-        style={marqueeContainerStyle}
-        onMouseEnter={() => {
-          if (pauseOnHover) {
-            setIsHovered(true)
-            onMarqueeHover?.()
-          }
-        }}
-        onMouseLeave={() => {
-          if (pauseOnHover) {
-            setIsHovered(false)
-          }
-        }}
+        className={marqueeClassName}
+        ref={marqueeRef}
+        style={marqueeStyle}
       >
-        <div
-          className={marqueeClassName}
-          ref={marqueeRef}
-          style={marqueeStyle}
-        >
-          {marqueeItemElms}
-        </div>
+        {marqueeItemElms}
       </div>
-    </>
+    </div>
   )
 }

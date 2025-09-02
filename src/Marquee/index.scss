@@ -189,4 +189,17 @@
       padding: 0 10px;
     }
   }
+
+  // Vertical marquee layout - simple positioning, no flexbox
+  &.vertical {
+    .marquee {
+      height: auto;
+      min-height: 100%;
+      width: 100%;
+    }
+
+    .marquee-item {
+      padding: 10px 0;
+    }
+  }
 }

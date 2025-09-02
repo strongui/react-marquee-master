@@ -9,7 +9,7 @@ interface BasicMarqueeProps {
 export const BasicMarquee: React.FC<BasicMarqueeProps> = ({ items }) => {
   const [state, setState] = useState({
     paused: false,
-    direction: MarqueeDirection.DOWN,
+    direction: MarqueeDirection.UP,
     speed: 40,
     pauseOnHover: false,
     pauseOnItemHover: false,
@@ -59,10 +59,7 @@ export const BasicMarquee: React.FC<BasicMarqueeProps> = ({ items }) => {
         currentState={state}
         type="basic"
       />
-      <div
-        className="marquee-demo"
-        style={{ height: 200 }}
-      >
+      <div className="marquee-demo">
         <Marquee
           marqueeItems={items}
           direction={state.direction}

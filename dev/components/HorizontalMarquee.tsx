@@ -9,7 +9,7 @@ interface HorizontalMarqueeProps {
 export const HorizontalMarquee: React.FC<HorizontalMarqueeProps> = ({ items }) => {
   const [state, setState] = useState({
     paused: false,
-    direction: MarqueeDirection.LEFT as MarqueeDirection,
+    direction: MarqueeDirection.RIGHT as MarqueeDirection,
     speed: 40,
     pauseOnHover: false,
     pauseOnItemHover: false,
