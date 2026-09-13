@@ -7,7 +7,7 @@ const defaultProps = {
   marqueeItems: [
     { id: 1, text: 'Item 1' },
     { id: 2, text: 'Item 2' },
-    { id: 3, text: 'Item 3' }
+    { id: 3, text: 'Item 3' },
   ],
   height: 100,
 }
@@ -258,7 +258,7 @@ describe('Marquee Component', () => {
     const mixedItems = [
       { id: 1, text: 'String Item' },
       { id: 2, content: <span key="jsx">JSX Item</span> },
-      { id: 3, text: 'Object Item', color: 5 }
+      { id: 3, text: 'Object Item', color: 5 },
     ]
     render(
       <Marquee
@@ -275,7 +275,7 @@ describe('Marquee Component', () => {
   it('applies data-color attribute to items with color property', () => {
     const itemsWithColor = [
       { id: 1, text: 'Colored Item', color: 42 },
-      { id: 2, text: 'Regular Item' }
+      { id: 2, text: 'Regular Item' },
     ]
     render(
       <Marquee

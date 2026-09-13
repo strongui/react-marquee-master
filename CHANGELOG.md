@@ -5,6 +5,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-09-12
+
+### Added
+
+- `MarqueeItem`, `MarqueeItemObject` and `MarqueeItemWithId` types are exported from the package entry
+- `exports` map: `import` resolves to the ES module build, `require` to the CommonJS build
+
+### Fixed
+
+- Node consumers work again. Since 2.0.0 the package declared `"type": "module"` while its CommonJS build used a `.js` extension, so `require()` failed and Node, SSR and Jest consumers could not load it. The CommonJS build is now `dist/index.cjs`
+- Bundled styles now actually apply. They were compiled as CSS modules with hashed class names that never matched the component's markup, so clipping, horizontal layout and fade masks did not work for npm consumers. Selectors are wrapped in `:where()` (zero specificity) so any consumer rule overrides them
+- Dummy spacer item is now hidden and non-interactive via inline styles (`opacity: 0`, `pointer-events: none`, `flex-shrink: 0`)
+- Dummy spacer stylesheet rule now targets `.marquee-dummy-item` directly
+- Published package no longer contains test type declarations or stale build files
+- Server-side rendering no longer logs React's `useLayoutEffect` warning
+- Type declarations no longer import the unpublished `.scss` source, and use explicit `.js` extensions for relative imports so they resolve under `node16`/`nodenext` module resolution
+
+### Changed
+
+- Moved `np` and `@testing-library/dom` from `dependencies` to `devDependencies`, so installing the package no longer pulls them in
+- `npm publish` now runs tests and a clean build first (`prepublishOnly`)
+- Security updates for dev dependencies (webpack, express/qs, lodash, node-forge, glob, js-yaml, postcss, nanoid, svgo, fast-uri, browserslist, baseline-browser-mapping)
+- CI now runs the test suite; the release workflow uses per-version release notes
+
 ## [2.0.0] - 2024-12-19
 
 ### 🎉 Major Features Added

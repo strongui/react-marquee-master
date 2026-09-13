@@ -12,6 +12,20 @@ import nested from 'postcss-nested';
 
 const extensions = ['.js', '.jsx', '.ts', '.tsx'];
 
+// Wrap every selector in :where() so the base styles have zero specificity
+// and any consumer rule overrides them. Pseudo-elements must stay outside :where().
+const zeroSpecificity = () => ({
+  postcssPlugin: 'zero-specificity',
+  Rule(rule) {
+    rule.selectors = rule.selectors.map(selector => {
+      if (selector.startsWith(':where(')) return selector;
+      const [, base, pseudoElement = ''] = selector.match(/^(.*?)(::?(?:before|after))?$/);
+      return `:where(${base})${pseudoElement}`;
+    });
+  },
+});
+zeroSpecificity.postcss = true;
+
 const defaultConfig = {
   input: './src/index.ts',
 
@@ -22,8 +36,11 @@ const defaultConfig = {
   plugins: [
     peerDepsExternal(),
     postcss({
-      plugins: [simplevars(), nested()],
-      modules: true,
+      plugins: [simplevars(), nested(), zeroSpecificity()],
+      // Plain class names: the component renders literal classes like "marquee-item"
+      modules: false,
+      // Inject first in <head> so consumer stylesheets win at equal specificity
+      inject: { insertAt: 'top' },
     }),
     svgr(),
     // Compile TypeScript/JavaScript files

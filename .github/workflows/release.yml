@@ -24,6 +24,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Run tests
+        run: npm test
+
       - name: Build library
         run: npm run build
 
@@ -32,9 +35,16 @@ jobs:
 
       - name: Create Release
         run: |
+          # Use RELEASE_NOTES_<tag>.md when present, otherwise let GitHub generate notes
+          NOTES_FILE="RELEASE_NOTES_${{ github.ref_name }}.md"
+          if [ -f "$NOTES_FILE" ]; then
+            NOTES_ARGS=(--notes-file "$NOTES_FILE")
+          else
+            NOTES_ARGS=(--generate-notes)
+          fi
           gh release create ${{ github.ref_name }} \
             --title "React Marquee Master ${{ github.ref_name }}" \
-            --notes-file RELEASE_NOTES_v2.0.0.md \
+            "${NOTES_ARGS[@]}" \
             --repo ${{ github.repository }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
