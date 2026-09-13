@@ -1,9 +1,10 @@
 import * as React from 'react'
 import useInterval from '../helpers/hookHelpers/useInterval'
+import useIsomorphicLayoutEffect from '../helpers/hookHelpers/useIsomorphicLayoutEffect'
 import useWindowResize from './hooks/useWindowResize'
 import './index.scss'
 
-const { useRef, useState, useEffect, useCallback, useLayoutEffect, useMemo } = React
+const { useRef, useState, useEffect, useCallback, useMemo } = React
 
 // Enums for better type safety and developer experience
 export enum MarqueeDirection {
@@ -325,7 +326,7 @@ export default function Marquee(props: IMarqueeProps) {
   )
 
   // Set initial off-screen positioning for infinite scroll
-  useLayoutEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     if (
       containerIsReady ||
       !marqueeContainerRef.current ||
@@ -536,9 +537,13 @@ export default function Marquee(props: IMarqueeProps) {
           ref={el => registerItemRef(itemId, el)}
           data-dummy={true}
           className="marquee-dummy-item"
+          // Inline because the component ships without usable styles
           style={{
             width: isHorizontal ? `${dummyItemSize.width}px` : 0,
             height: isVertical ? `${dummyItemSize.height}px` : 0,
+            opacity: 0,
+            pointerEvents: 'none',
+            flexShrink: 0,
           }}
         />
       )

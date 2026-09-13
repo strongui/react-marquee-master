@@ -165,8 +165,9 @@ const marqueeItems = [
 
 ### Standalone
 
-You can import `node_modules/react-marquee-master/dist/index.js` into your page. Please make sure
-that you have already imported `react` and `react-dom` into your page.
+The package ships CommonJS (`dist/index.cjs`) and ES module (`dist/index.esm.js`) builds that import
+`react` by name, so use it through a bundler (webpack, Vite, Rollup, etc.) or a page with an import
+map for `react`. There is no UMD build for plain `<script>` tags.
 
 ## Item ID Requirements
 
@@ -208,7 +209,7 @@ Notes:
 - The `marqueeItems` property accepts an array of objects with `id`, `text`/`content`, and optional `color`/`icon` properties.
 - You must define either a `height` or `minHeight` for the marquee, because the marquee elements are absolutely positioned and will not grow the marquee container on their own.
 - All other props are optional, and are there to allow you to customize the marquee to your liking.
-- The component comes without any styles or style sheets. It's up to you to style the marquee any way you want. All this component will do is handle the animations for you.
+- The component ships with base styles (clipping, item positioning, horizontal layout and fade masks) that are injected automatically when you import it. They use zero-specificity `:where()` selectors, so any rule of yours, including classes passed through the `*ClassName` props, overrides them.
 
 | Prop                      | Type                       | Values                | Default | Description                                                    |
 | ------------------------- | -------------------------- | --------------------- | ------- | -------------------------------------------------------------- |

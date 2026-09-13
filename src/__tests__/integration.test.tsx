@@ -28,7 +28,7 @@ describe('Marquee Integration Tests', () => {
             marqueeItems={[
               { id: 1, text: 'Item 1' },
               { id: 2, text: 'Item 2' },
-              { id: 3, text: 'Item 3' }
+              { id: 3, text: 'Item 3' },
             ]}
             direction={direction}
           />
@@ -51,7 +51,7 @@ describe('Marquee Integration Tests', () => {
         <Marquee
           marqueeItems={[
             { id: 1, text: 'Item 1' },
-            { id: 2, text: 'Item 2' }
+            { id: 2, text: 'Item 2' },
           ]}
           paused={true}
           onPause={onPause}
@@ -67,7 +67,7 @@ describe('Marquee Integration Tests', () => {
         <Marquee
           marqueeItems={[
             { id: 1, text: 'Item 1' },
-            { id: 2, text: 'Item 2' }
+            { id: 2, text: 'Item 2' },
           ]}
           paused={false}
           onPause={onPause}
@@ -86,7 +86,7 @@ describe('Marquee Integration Tests', () => {
         <Marquee
           marqueeItems={[
             { id: 1, text: 'Item 1' },
-            { id: 2, text: 'Item 2' }
+            { id: 2, text: 'Item 2' },
           ]}
           pauseOnHover={true}
           onMarqueeHover={onMarqueeHover}
@@ -109,7 +109,7 @@ describe('Marquee Integration Tests', () => {
         <Marquee
           marqueeItems={[
             { id: 1, text: 'Item 1' },
-            { id: 2, text: 'Item 2' }
+            { id: 2, text: 'Item 2' },
           ]}
           pauseOnItemHover={true}
           onMarqueeItemHover={onMarqueeItemHover}
@@ -182,10 +182,14 @@ describe('Marquee Integration Tests', () => {
 
   describe('Item Types Integration', () => {
     it('integrates string items', () => {
-      render(<Marquee marqueeItems={[
-        { id: 1, text: 'String Item 1' },
-        { id: 2, text: 'String Item 2' }
-      ]} />)
+      render(
+        <Marquee
+          marqueeItems={[
+            { id: 1, text: 'String Item 1' },
+            { id: 2, text: 'String Item 2' },
+          ]}
+        />
+      )
 
       expect(screen.getByText('String Item 1')).toBeInTheDocument()
       expect(screen.getByText('String Item 2')).toBeInTheDocument()
@@ -218,7 +222,7 @@ describe('Marquee Integration Tests', () => {
       const config = {
         marqueeItems: [
           { id: 1, text: 'Config Item 1' },
-          { id: 2, text: 'Config Item 2' }
+          { id: 2, text: 'Config Item 2' },
         ],
         direction: MarqueeDirection.LEFT,
         height: 100,
@@ -257,9 +261,9 @@ describe('Marquee Integration Tests', () => {
         const { unmount } = render(
           <Marquee
             marqueeItems={[
-            { id: 1, text: 'Item 1' },
-            { id: 2, text: 'Item 2' }
-          ]}
+              { id: 1, text: 'Item 1' },
+              { id: 2, text: 'Item 2' },
+            ]}
             direction={direction}
           />
         )
@@ -284,7 +288,8 @@ describe('Marquee Integration Tests', () => {
         />
       )
 
-      let marqueeItems = document.querySelectorAll('.marquee-item')
+      // The dummy spacer has no .marquee-item class, so query all children of .marquee
+      let marqueeItems = document.querySelectorAll('.marquee > *')
       let dummyItem = document.querySelector('.marquee-dummy-item')
 
       // For UP direction, dummy should be last
@@ -298,7 +303,7 @@ describe('Marquee Integration Tests', () => {
         />
       )
 
-      marqueeItems = document.querySelectorAll('.marquee-item')
+      marqueeItems = document.querySelectorAll('.marquee > *')
       dummyItem = document.querySelector('.marquee-dummy-item')
 
       // For DOWN direction, dummy should be first

@@ -4,5 +4,6 @@ import { IMarqueeProps as IMarqueePropsAlias, MarqueeDirection, FadeMaskColor } 
 import Marquee from './Marquee'
 
 export type IMarqueeProps = IMarqueePropsAlias
+export type { MarqueeItem, MarqueeItemObject, MarqueeItemWithId } from './Marquee'
 export { MarqueeDirection, FadeMaskColor }
 export default Marquee

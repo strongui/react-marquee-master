@@ -9,6 +9,20 @@
     // Add smooth transitions for positioning
     transition: none; // Disable transitions to prevent conflicts with JS animation
 
+    // Dummy item styling - completely invisible (the dummy has no .marquee-item class)
+    .marquee-dummy-item {
+      opacity: 0;
+      pointer-events: none;
+      user-select: none;
+      visibility: hidden;
+      background: transparent;
+      border: none;
+      margin: 0;
+      padding: 0;
+      display: block;
+      flex-shrink: 0;
+    }
+
     // Ensure items are properly positioned
     .marquee-item {
       display: block;
@@ -23,20 +37,6 @@
           opacity: 0.8;
           transition: opacity 0.2s ease;
         }
-      }
-
-      // Dummy item styling - completely invisible
-      &.marquee-dummy-item {
-        opacity: 0;
-        pointer-events: none;
-        user-select: none;
-        visibility: hidden;
-        background: transparent;
-        border: none;
-        margin: 0;
-        padding: 0;
-        display: block;
-        flex-shrink: 0;
       }
 
       // Icon styling
