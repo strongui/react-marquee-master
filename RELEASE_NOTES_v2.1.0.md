@@ -1,4 +1,4 @@
-# React Marquee Master v2.1.0
+# 2.1.0
 
 Bug fixes and packaging cleanup. No breaking API changes.
 

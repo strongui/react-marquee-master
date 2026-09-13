@@ -43,7 +43,7 @@ jobs:
             NOTES_ARGS=(--generate-notes)
           fi
           gh release create ${{ github.ref_name }} \
-            --title "React Marquee Master ${{ github.ref_name }}" \
+            --title "${GITHUB_REF_NAME#v}" \
             "${NOTES_ARGS[@]}" \
             --repo ${{ github.repository }}
         env:
